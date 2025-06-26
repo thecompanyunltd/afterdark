@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gay After Dark Confessions</title>
+  <title>RSVP for Party</title>
   <style>
     body {
       margin: 0;
@@ -52,18 +52,6 @@
       backdrop-filter: blur(5px);
     }
 
-    .content-box-buttons {
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 2rem;
-      border-radius: 15px;
-      margin: 2rem;
-      max-width: 800px;
-      width: 90%;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      justify-content: center;
-    }
-
     h1 {
       font-family: 'Baskerville Old Style', serif;
       font-size: 2.5rem;
@@ -72,32 +60,36 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
-    p {
-      margin: 1.5rem 0;
-      line-height: 1.6;
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
       font-size: 1.1rem;
+      color: #ddd;
     }
 
-    footer {
-      margin: 2rem auto;
-      font-size: 0.9rem;
-      color: #aaa;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 1rem;
-      border-radius: 10px;
+    input, textarea, select {
+      padding: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background-color: rgba(255, 255, 255, 0.1) !important;
+      color: white;
+      font-family: inherit;
+      font-size: 1rem;
     }
 
-    @media (max-width: 600px) {
-      .content-box {
-        padding: 1.5rem;
-        width: 85%;
-      }
-      h1 {
-        font-size: 2rem;
-      }
-      p {
-        font-size: 1rem;
-      }
+    textarea {
+      min-height: 100px;
+      resize: vertical;
     }
 
     button {
@@ -118,6 +110,57 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
+    .thank-you {
+      text-align: center;
+      display: none;
+    }
+
+    .thank-you h2 {
+      color: #ff8c00;
+      font-size: 2rem;
+    }
+
+    .comment-section {
+      margin-top: 2rem;
+      display: none;
+    }
+
+    .comment-form {
+      margin-top: 1rem;
+    }
+
+    footer {
+      margin: 2rem auto;
+      font-size: 0.9rem;
+      color: #aaa;
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 1rem;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .content-box {
+        padding: 1.5rem;
+        width: 85%;
+      }
+      h1 {
+        font-size: 2rem;
+      }
+    }
+    /* Style for the select dropdown */
+select {
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+/* Style for dropdown options */
+select option {
+    background-color:black;
+    /*color: white;  White text for options */
+}
+
+/* Style for dropdown when opened */
+
   </style>
 </head>
 <body>
@@ -130,38 +173,71 @@
   </header>
 
   <div class="content-box">
-    <h1>Confessions Portal</h1>
-    <p>
-      Welcome to the anonymous confessions portal for <strong>Gay After Dark</strong>. 
-      Drop your juicy stories, thoughts, or compliments before or during the party. 
-      No one will know who you are — so let it all out 💋. 
-    </p>
-    <p>{Click on the chat icon on the bottom right of your screen to start your confession}</p>
-  </div>
-
-  <div class="content-box-buttons">
-    <h1>Party Menu</h1>
-    <p>
-      <ul>
-        <button onclick="window.location.href='countdown.html'"> Countdown </button>
-        <button onclick="window.location.href='noticeboard.html'">  Noticeboard </button>
-        <button onclick="window.location.href='checkin.html'"> Check In </button>
-      </ul>
-    </p>
+    <h1>RSVP for the Party</h1>
+    
+    <form id="rsvpForm">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="phone" id="phone" name="phone" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="attending">Will you be attending?</label>
+        <select id="attending" name="attending" required>
+          <option value="">Select an option</option>
+          <option value="yes">Absolutely! Wouldn't miss it!</option>
+          <option value="no">Sorry, can't make it</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="guests">Number of guests (including you)</label>
+        <input type="number" id="guests" name="guests" min="1" value="1" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="message">Anything we should know? (Allergies, special requests, etc.)</label>
+        <textarea id="message" name="message"></textarea>
+      </div>
+      
+      <button type="submit">Submit RSVP</button>
+    </form>
+    
+    <div class="thank-you" id="thankYou">
+      <h2>Thank You!</h2>
+      <p>Your RSVP has been received. We can't wait to see you at the party!</p>
+      <p>Feel free to leave a message on our notice board about what you're looking forward to:</p>
+      
+      <div class="comment-section" id="commentSection">
+        <div class="form-group">
+          <label for="comment">Your Message</label>
+          <textarea id="comment" name="comment" placeholder="What are you most excited about?"></textarea>
+        </div>
+        <button id="submitComment">Post to Notice Board</button>
+        <p><a href="noticeboard.html" style="color: #ff8c00;">View Notice Board</a></p>
+      </div>
+    </div>
   </div>
 
   <footer>
     Made with love for the drama queens & night creatures 🌙
   </footer>
 
-  <!-- Chatling Popup Widget -->
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+  
+  <!-- Firebase Config -->
+  <script src="firebase-config.js"></script>
+  
+  <!-- Waves Animation (same as original) -->
   <script>
-    window.chtlConfig = { chatbotId: "1527145964" };
-  </script>
-  <script async data-id="1527145964" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
-
-  <!-- Waves Animation -->
-  <script>
+    // Same wave animation script as in your original code
     class Grad {
       constructor(x, y, z) {
         this.x = x; this.y = y; this.z = z;
@@ -265,31 +341,29 @@
       }
 
       function setLines() {
-  const { width, height } = bounding;
-  lines = [];
-  const oWidth = width + 200, oHeight = height + 30;
-  const { xGap, yGap } = config;
-  const totalLines = Math.ceil(oWidth / xGap);
-  const totalPoints = Math.ceil(oHeight / yGap);
-  const xStart = (width - xGap * totalLines) / 2;
-  const yStart = (height - yGap * totalPoints) / 2;
+        const { width, height } = bounding;
+        lines = [];
+        const oWidth = width + 200, oHeight = height + 30;
+        const { xGap, yGap } = config;
+        const totalLines = Math.ceil(oWidth / xGap);
+        const totalPoints = Math.ceil(oHeight / yGap);
+        const xStart = (width - xGap * totalLines) / 2;
+        const yStart = (height - yGap * totalPoints) / 2;
 
-  for (let i = 0; i <= totalLines; i++) {
-    const pts = [];
-    for (let j = 0; j <= totalPoints; j++) {
-      pts.push({
-        x: xStart + xGap * i,
-        y: yStart + yGap * j,
-        wave: { x: 0, y: 0 },
-        cursor: { x: 0, y: 0, vx: 0, vy: 0 }
-      });
-    }
-    pts.color = prideColors[Math.floor(Math.random() * prideColors.length)]; // ✅ Save color directly on array
-    lines.push(pts);
-  }
-}
-
-
+        for (let i = 0; i <= totalLines; i++) {
+          const pts = [];
+          for (let j = 0; j <= totalPoints; j++) {
+            pts.push({
+              x: xStart + xGap * i,
+              y: yStart + yGap * j,
+              wave: { x: 0, y: 0 },
+              cursor: { x: 0, y: 0, vx: 0, vy: 0 }
+            });
+          }
+          pts.color = prideColors[Math.floor(Math.random() * prideColors.length)];
+          lines.push(pts);
+        }
+      }
 
       function movePoints(time) {
         const { waveSpeedX, waveSpeedY, waveAmpX, waveAmpY, friction, tension, maxCursorMove } = config;
@@ -330,36 +404,34 @@
       }
 
       function drawLines() {
-  const { width, height } = bounding;
-  ctx.clearRect(0, 0, width, height);
+        const { width, height } = bounding;
+        ctx.clearRect(0, 0, width, height);
 
-  // Optional pride glow background
-  const gradient = ctx.createLinearGradient(0, 0, width, height);
-  gradient.addColorStop(0, "rgba(228, 3, 3, 0.1)");
-  gradient.addColorStop(0.2, "rgba(255, 140, 0, 0.1)");
-  gradient.addColorStop(0.4, "rgba(255, 237, 0, 0.1)");
-  gradient.addColorStop(0.6, "rgba(0, 128, 38, 0.1)");
-  gradient.addColorStop(0.8, "rgba(0, 77, 255, 0.1)");
-  gradient.addColorStop(1, "rgba(117, 7, 135, 0.1)");
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, width, height);
+        // Optional pride glow background
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, "rgba(228, 3, 3, 0.1)");
+        gradient.addColorStop(0.2, "rgba(255, 140, 0, 0.1)");
+        gradient.addColorStop(0.4, "rgba(255, 237, 0, 0.1)");
+        gradient.addColorStop(0.6, "rgba(0, 128, 38, 0.1)");
+        gradient.addColorStop(0.8, "rgba(0, 77, 255, 0.1)");
+        gradient.addColorStop(1, "rgba(117, 7, 135, 0.1)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
 
-  lines.forEach((points) => {
-    ctx.beginPath();
-    let p1 = moved(points[0], false);
-    ctx.moveTo(p1.x, p1.y);
-    for (let idx = 1; idx < points.length; idx++) {
-      const p = points[idx];
-      const p2 = moved(p, true);
-      ctx.lineTo(p2.x, p2.y);
-    }
-    ctx.strokeStyle = points.color || "#fff";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-  });
-}
-
-
+        lines.forEach((points) => {
+          ctx.beginPath();
+          let p1 = moved(points[0], false);
+          ctx.moveTo(p1.x, p1.y);
+          for (let idx = 1; idx < points.length; idx++) {
+            const p = points[idx];
+            const p2 = moved(p, true);
+            ctx.lineTo(p2.x, p2.y);
+          }
+          ctx.strokeStyle = points.color || "#fff";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        });
+      }
 
       function tick(t) {
         mouse.sx += (mouse.x - mouse.sx) * 0.1;
@@ -406,6 +478,81 @@
       window.addEventListener("resize", onResize);
       window.addEventListener("mousemove", onMouseMove);
       window.addEventListener("touchmove", onTouchMove, { passive: false });
+    });
+  </script>
+
+  <!-- Form Handling -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const rsvpForm = document.getElementById('rsvpForm');
+      const thankYou = document.getElementById('thankYou');
+      const commentSection = document.getElementById('commentSection');
+      
+      rsvpForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Get form values
+        const name = document.getElementById('name').value;
+        const phone = document.getElementById('phone').value;
+        const attending = document.getElementById('attending').value;
+        const guests = document.getElementById('guests').value;
+        const message = document.getElementById('message').value;
+        
+        // Save to Firestore
+        db.collection('checkins').add({
+          name: name,
+          phone: phone,
+          attending: attending,
+          guests: guests,
+          message: message,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+          // Hide form, show thank you message
+          rsvpForm.style.display = 'none';
+          thankYou.style.display = 'block';
+          commentSection.style.display = 'block';
+          
+          // Store in localStorage to remember they've RSVP'd
+          localStorage.setItem('hasRSVPd', 'true');
+        })
+        .catch((error) => {
+          console.error('Error adding document: ', error);
+          alert('There was an error submitting your RSVP. Please try again.');
+        });
+      });
+      
+      // Check if they've already RSVP'd
+      //if (localStorage.getItem('hasRSVPd') === 'true') {
+       // rsvpForm.style.display = 'none';
+       // thankYou.style.display = 'block';
+       // commentSection.style.display = 'block';
+      //}
+      
+      // Handle comment submission
+      document.getElementById('submitComment').addEventListener('click', function() {
+        const comment = document.getElementById('comment').value;
+        const name = document.getElementById('name').value;
+        
+        if (comment.trim() === '') {
+          alert('Please enter a message before posting.');
+          return;
+        }
+        
+        db.collection('comments').add({
+          name: name,
+          comment: comment,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+          alert('Your message has been posted to the notice board!');
+          document.getElementById('comment').value = '';
+        })
+        .catch((error) => {
+          console.error('Error adding comment: ', error);
+          alert('There was an error posting your message. Please try again.');
+        });
+      });
     });
   </script>
 </body>

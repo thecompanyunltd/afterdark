@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gay After Dark Confessions</title>
+  <title>Countdown to Party</title>
   <style>
     body {
       margin: 0;
@@ -50,18 +50,7 @@
       width: 90%;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(5px);
-    }
-
-    .content-box-buttons {
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 2rem;
-      border-radius: 15px;
-      margin: 2rem;
-      max-width: 800px;
-      width: 90%;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      justify-content: center;
+      text-align: center;
     }
 
     h1 {
@@ -72,10 +61,34 @@
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
-    p {
-      margin: 1.5rem 0;
-      line-height: 1.6;
-      font-size: 1.1rem;
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .countdown-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .countdown-number {
+      font-size: 3rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .countdown-label {
+      font-size: 1rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     footer {
@@ -95,29 +108,13 @@
       h1 {
         font-size: 2rem;
       }
-      p {
-        font-size: 1rem;
+      .countdown {
+        gap: 0.5rem;
+      }
+      .countdown-number {
+        font-size: 2rem;
       }
     }
-
-    button {
-      padding: 1rem;
-      border-radius: 8px;
-      border: none;
-      background: linear-gradient(45deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
-      color: white;
-      font-weight: bold;
-      font-size: 1.1rem;
-      cursor: pointer;
-      margin-top: 1rem;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
   </style>
 </head>
 <body>
@@ -130,38 +127,39 @@
   </header>
 
   <div class="content-box">
-    <h1>Confessions Portal</h1>
-    <p>
-      Welcome to the anonymous confessions portal for <strong>Gay After Dark</strong>. 
-      Drop your juicy stories, thoughts, or compliments before or during the party. 
-      No one will know who you are — so let it all out 💋. 
-    </p>
-    <p>{Click on the chat icon on the bottom right of your screen to start your confession}</p>
-  </div>
-
-  <div class="content-box-buttons">
-    <h1>Party Menu</h1>
-    <p>
-      <ul>
-        <button onclick="window.location.href='countdown.html'"> Countdown </button>
-        <button onclick="window.location.href='noticeboard.html'">  Noticeboard </button>
-        <button onclick="window.location.href='checkin.html'"> Check In </button>
-      </ul>
-    </p>
+    <h1>Countdown to Party Time!</h1>
+    <p>The fabulous event starts on July 25, 2025 at 5:00 PM</p>
+    
+    <div class="countdown">
+      <div class="countdown-item">
+        <span class="countdown-number" id="days">00</span>
+        <span class="countdown-label">Days</span>
+      </div>
+      <div class="countdown-item">
+        <span class="countdown-number" id="hours">00</span>
+        <span class="countdown-label">Hours</span>
+      </div>
+      <div class="countdown-item">
+        <span class="countdown-number" id="minutes">00</span>
+        <span class="countdown-label">Minutes</span>
+      </div>
+      <div class="countdown-item">
+        <span class="countdown-number" id="seconds">00</span>
+        <span class="countdown-label">Seconds</span>
+      </div>
+    </div>
+    
+    <p>Get ready for an unforgettable night of fun, games, and fabulousness!</p>
+    <a href="checkin.html" style="color: #ff8c00; text-decoration: none; font-weight: bold;">RSVP Now →</a>
   </div>
 
   <footer>
     Made with love for the drama queens & night creatures 🌙
   </footer>
 
-  <!-- Chatling Popup Widget -->
+  <!-- Waves Animation (same as original) -->
   <script>
-    window.chtlConfig = { chatbotId: "1527145964" };
-  </script>
-  <script async data-id="1527145964" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
-
-  <!-- Waves Animation -->
-  <script>
+    // Same wave animation script as in your original code
     class Grad {
       constructor(x, y, z) {
         this.x = x; this.y = y; this.z = z;
@@ -265,31 +263,29 @@
       }
 
       function setLines() {
-  const { width, height } = bounding;
-  lines = [];
-  const oWidth = width + 200, oHeight = height + 30;
-  const { xGap, yGap } = config;
-  const totalLines = Math.ceil(oWidth / xGap);
-  const totalPoints = Math.ceil(oHeight / yGap);
-  const xStart = (width - xGap * totalLines) / 2;
-  const yStart = (height - yGap * totalPoints) / 2;
+        const { width, height } = bounding;
+        lines = [];
+        const oWidth = width + 200, oHeight = height + 30;
+        const { xGap, yGap } = config;
+        const totalLines = Math.ceil(oWidth / xGap);
+        const totalPoints = Math.ceil(oHeight / yGap);
+        const xStart = (width - xGap * totalLines) / 2;
+        const yStart = (height - yGap * totalPoints) / 2;
 
-  for (let i = 0; i <= totalLines; i++) {
-    const pts = [];
-    for (let j = 0; j <= totalPoints; j++) {
-      pts.push({
-        x: xStart + xGap * i,
-        y: yStart + yGap * j,
-        wave: { x: 0, y: 0 },
-        cursor: { x: 0, y: 0, vx: 0, vy: 0 }
-      });
-    }
-    pts.color = prideColors[Math.floor(Math.random() * prideColors.length)]; // ✅ Save color directly on array
-    lines.push(pts);
-  }
-}
-
-
+        for (let i = 0; i <= totalLines; i++) {
+          const pts = [];
+          for (let j = 0; j <= totalPoints; j++) {
+            pts.push({
+              x: xStart + xGap * i,
+              y: yStart + yGap * j,
+              wave: { x: 0, y: 0 },
+              cursor: { x: 0, y: 0, vx: 0, vy: 0 }
+            });
+          }
+          pts.color = prideColors[Math.floor(Math.random() * prideColors.length)];
+          lines.push(pts);
+        }
+      }
 
       function movePoints(time) {
         const { waveSpeedX, waveSpeedY, waveAmpX, waveAmpY, friction, tension, maxCursorMove } = config;
@@ -330,36 +326,34 @@
       }
 
       function drawLines() {
-  const { width, height } = bounding;
-  ctx.clearRect(0, 0, width, height);
+        const { width, height } = bounding;
+        ctx.clearRect(0, 0, width, height);
 
-  // Optional pride glow background
-  const gradient = ctx.createLinearGradient(0, 0, width, height);
-  gradient.addColorStop(0, "rgba(228, 3, 3, 0.1)");
-  gradient.addColorStop(0.2, "rgba(255, 140, 0, 0.1)");
-  gradient.addColorStop(0.4, "rgba(255, 237, 0, 0.1)");
-  gradient.addColorStop(0.6, "rgba(0, 128, 38, 0.1)");
-  gradient.addColorStop(0.8, "rgba(0, 77, 255, 0.1)");
-  gradient.addColorStop(1, "rgba(117, 7, 135, 0.1)");
-  ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, width, height);
+        // Optional pride glow background
+        const gradient = ctx.createLinearGradient(0, 0, width, height);
+        gradient.addColorStop(0, "rgba(228, 3, 3, 0.1)");
+        gradient.addColorStop(0.2, "rgba(255, 140, 0, 0.1)");
+        gradient.addColorStop(0.4, "rgba(255, 237, 0, 0.1)");
+        gradient.addColorStop(0.6, "rgba(0, 128, 38, 0.1)");
+        gradient.addColorStop(0.8, "rgba(0, 77, 255, 0.1)");
+        gradient.addColorStop(1, "rgba(117, 7, 135, 0.1)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, width, height);
 
-  lines.forEach((points) => {
-    ctx.beginPath();
-    let p1 = moved(points[0], false);
-    ctx.moveTo(p1.x, p1.y);
-    for (let idx = 1; idx < points.length; idx++) {
-      const p = points[idx];
-      const p2 = moved(p, true);
-      ctx.lineTo(p2.x, p2.y);
-    }
-    ctx.strokeStyle = points.color || "#fff";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-  });
-}
-
-
+        lines.forEach((points) => {
+          ctx.beginPath();
+          let p1 = moved(points[0], false);
+          ctx.moveTo(p1.x, p1.y);
+          for (let idx = 1; idx < points.length; idx++) {
+            const p = points[idx];
+            const p2 = moved(p, true);
+            ctx.lineTo(p2.x, p2.y);
+          }
+          ctx.strokeStyle = points.color || "#fff";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        });
+      }
 
       function tick(t) {
         mouse.sx += (mouse.x - mouse.sx) * 0.1;
@@ -406,6 +400,39 @@
       window.addEventListener("resize", onResize);
       window.addEventListener("mousemove", onMouseMove);
       window.addEventListener("touchmove", onTouchMove, { passive: false });
+    });
+  </script>
+
+  <!-- Countdown Timer -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const countdownDate = new Date('July 25, 2025 17:00:00').getTime();
+      
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = countdownDate - now;
+        
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        document.getElementById('days').textContent = days.toString().padStart(2, '0');
+        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          document.getElementById('days').textContent = '00';
+          document.getElementById('hours').textContent = '00';
+          document.getElementById('minutes').textContent = '00';
+          document.getElementById('seconds').textContent = '00';
+        }
+      }
+      
+      updateCountdown();
+      const countdownInterval = setInterval(updateCountdown, 1000);
     });
   </script>
 </body>
