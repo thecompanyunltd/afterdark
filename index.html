@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Gay After Dark Confessions</title>
   <style>
+    /* Base styles */
+    :root {
+      --mobile-padding: 1rem;
+    }
+    
     body {
       margin: 0;
       font-family: 'Cascadia Code', monospace;
@@ -15,6 +20,7 @@
       align-items: center;
       position: relative;
       min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
     }
 
     .waves-container {
@@ -38,68 +44,50 @@
       max-width: 1000px;
       height: auto;
       display: block;
-      margin-top: 2rem;
+      margin-top: 1rem;
+      padding: 0 var(--mobile-padding);
+      box-sizing: border-box;
     }
 
-    .content-box {
+    .content-box, .content-box-buttons {
       background-color: rgba(0, 0, 0, 0.7);
-      padding: 2rem;
+      padding: var(--mobile-padding);
       border-radius: 15px;
-      margin: 1rem;
+      margin: 1rem auto;
       max-width: 800px;
-      width: 90%;
+      width: calc(100% - 2rem);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(5px);
-    }
-
-    .content-box-buttons {
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 2rem;
-      border-radius: 15px;
-      margin: 2rem;
-      max-width: 800px;
-      width: 90%;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      justify-content: center;
+      box-sizing: border-box;
     }
 
     h1 {
       font-family: 'Baskerville Old Style', serif;
-      font-size: 2.5rem;
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
       margin-top: 0;
       color: #fff;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
     p {
-      margin: 1.5rem 0;
+      margin: 1rem 0;
       line-height: 1.6;
-      font-size: 1.1rem;
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
     }
 
     footer {
-      margin: 2rem auto;
-      font-size: 0.9rem;
+      margin: 1rem auto;
+      font-size: 0.8rem;
       color: #aaa;
       background-color: rgba(0, 0, 0, 0.7);
-      padding: 1rem;
+      padding: 0.8rem;
       border-radius: 10px;
+      width: calc(100% - 2rem);
+      text-align: center;
+      box-sizing: border-box;
     }
 
-    @media (max-width: 600px) {
-      .content-box {
-        padding: 1.5rem;
-        width: 85%;
-      }
-      h1 {
-        font-size: 2rem;
-      }
-      p {
-        font-size: 1rem;
-      }
-    }
-
+    /* Button styles */
     button {
       padding: 1rem;
       border-radius: 8px;
@@ -107,18 +95,65 @@
       background: linear-gradient(45deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
       color: white;
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: 1rem;
       cursor: pointer;
-      margin-top: 1rem;
+      margin: 0.5rem 0;
+      width: 100%;
       transition: transform 0.2s, box-shadow 0.2s;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    button:hover {
+    button:hover, button:focus {
       transform: translateY(-2px);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
-  </style>
+    /* Mobile menu buttons */
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 0.5rem;
+    }
+
+    /* Mobile-specific adjustments */
+    @media (max-width: 600px) {
+      header img {
+        margin-top: 0.5rem;
+      }
+      
+      .content-box, .content-box-buttons {
+        padding: 1rem;
+        margin: 0.5rem auto;
+        width: calc(100% - 1rem);
+      }
+      
+      p {
+        margin: 0.8rem 0;
+      }
+      
+      /* Chat widget adjustment */
+      #chtl-script {
+        bottom: 80px !important;
+      }
+    }
+
+    /* Very small devices */
+    @media (max-width: 400px) {
+      :root {
+        --mobile-padding: 0.8rem;
+      }
+      
+      h1 {
+        font-size: 1.3rem;
+      }
+      
+      button {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+      }
+    }
+</style>
 </head>
 <body>
   <div class="waves-container">
@@ -139,16 +174,14 @@
     <p>{Click on the chat icon on the bottom right of your screen to start your confession}</p>
   </div>
 
-  <div class="content-box-buttons">
+<div class="content-box-buttons">
     <h1>Party Menu</h1>
-    <p>
-      <ul>
-        <button onclick="window.location.href='countdown.html'"> Countdown </button>
-        <button onclick="window.location.href='noticeboard.html'">  Noticeboard </button>
-        <button onclick="window.location.href='checkin.html'"> Check In </button>
-      </ul>
-    </p>
-  </div>
+    <div class="button-container">
+        <button onclick="window.location.href='countdown.html'">Countdown</button>
+        <button onclick="window.location.href='noticeboard.html'">Noticeboard</button>
+        <button onclick="window.location.href='checkin.html'">Check In</button>
+    </div>
+</div>
 
   <footer>
     Made with love for the drama queens & night creatures 🌙
@@ -406,6 +439,39 @@
       window.addEventListener("resize", onResize);
       window.addEventListener("mousemove", onMouseMove);
       window.addEventListener("touchmove", onTouchMove, { passive: false });
+    });
+
+        // Better touch handling for mobile
+    document.addEventListener('DOMContentLoaded', function() {
+        // Make buttons more responsive to touch
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.classList.add('active');
+            });
+            
+            button.addEventListener('touchend', function() {
+                this.classList.remove('active');
+            });
+        });
+
+        // Prevent zooming on double-tap
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        // Adjust chat widget position on mobile
+        function adjustChatWidget() {
+            if (window.innerWidth <= 600) {
+                const chatWidget = document.querySelector('#chtl-script');
+                if (chatWidget) {
+                    chatWidget.style.bottom = '80px';
+                }
+            }
+        }
+        
+        window.addEventListener('resize', adjustChatWidget);
+        adjustChatWidget();
     });
   </script>
 </body>
