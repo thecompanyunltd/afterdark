@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Countdown to Party</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Gay After Dark Confessions</title>
   <style>
+    /* Base styles */
+    :root {
+      --mobile-padding: 1rem;
+    }
+    
     body {
       margin: 0;
       font-family: 'Cascadia Code', monospace;
@@ -15,6 +20,7 @@
       align-items: center;
       position: relative;
       min-height: 100vh;
+      -webkit-text-size-adjust: 100%;
     }
 
     .waves-container {
@@ -38,85 +44,50 @@
       max-width: 1000px;
       height: auto;
       display: block;
-      margin-top: 2rem;
+      margin-top: 1rem;
+      padding: 0 var(--mobile-padding);
+      box-sizing: border-box;
     }
 
-    .content-box {
+    .content-box, .content-box-buttons {
       background-color: rgba(0, 0, 0, 0.7);
-      padding: 2rem;
+      padding: var(--mobile-padding);
       border-radius: 15px;
-      margin: 1rem;
+      margin: 1rem auto;
       max-width: 800px;
-      width: 90%;
+      width: calc(100% - 2rem);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(5px);
-      text-align: center;
+      box-sizing: border-box;
     }
 
     h1 {
       font-family: 'Baskerville Old Style', serif;
-      font-size: 2.5rem;
+      font-size: clamp(1.5rem, 5vw, 2.5rem);
       margin-top: 0;
       color: #fff;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
-    .countdown {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin: 2rem 0;
-    }
-
-    .countdown-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .countdown-number {
-      font-size: 3rem;
-      font-weight: bold;
-      background: linear-gradient(45deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
-
-    .countdown-label {
-      font-size: 1rem;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    p {
+      margin: 1rem 0;
+      line-height: 1.6;
+      font-size: clamp(0.9rem, 3vw, 1.1rem);
     }
 
     footer {
-      margin: 2rem auto;
-      font-size: 0.9rem;
+      margin: 1rem auto;
+      font-size: 0.8rem;
       color: #aaa;
       background-color: rgba(0, 0, 0, 0.7);
-      padding: 1rem;
+      padding: 0.8rem;
       border-radius: 10px;
+      width: calc(100% - 2rem);
+      text-align: center;
+      box-sizing: border-box;
     }
 
-    @media (max-width: 600px) {
-      .content-box {
-        padding: 1.5rem;
-        width: 85%;
-      }
-      h1 {
-        font-size: 2rem;
-      }
-      .countdown {
-        gap: 0.5rem;
-      }
-      .countdown-number {
-        font-size: 2rem;
-      }
-    }
-
-        /* Button styles */
+    /* Button styles */
     button {
       padding: 1rem;
       border-radius: 8px;
@@ -144,7 +115,45 @@
       width: 100%;
       gap: 0.5rem;
     }
-  </style>
+
+    /* Mobile-specific adjustments */
+    @media (max-width: 600px) {
+      header img {
+        margin-top: 0.5rem;
+      }
+      
+      .content-box, .content-box-buttons {
+        padding: 1rem;
+        margin: 0.5rem auto;
+        width: calc(100% - 1rem);
+      }
+      
+      p {
+        margin: 0.8rem 0;
+      }
+      
+      /* Chat widget adjustment */
+      #chtl-script {
+        bottom: 80px !important;
+      }
+    }
+
+    /* Very small devices */
+    @media (max-width: 400px) {
+      :root {
+        --mobile-padding: 0.8rem;
+      }
+      
+      h1 {
+        font-size: 1.3rem;
+      }
+      
+      button {
+        padding: 0.8rem;
+        font-size: 0.9rem;
+      }
+    }
+</style>
 </head>
 <body>
   <div class="waves-container">
@@ -155,47 +164,36 @@
     <img src="Adobe Express - file.png" alt="Gay After Dark Logo" />
   </header>
 
-  <div class="content-box">
-    <h1>Countdown to Party Time!</h1>
-    <p>The fabulous event starts on July 25, 2025 at 5:00 PM</p>
-    
-    <div class="countdown">
-      <div class="countdown-item">
-        <span class="countdown-number" id="days">00</span>
-        <span class="countdown-label">Days</span>
-      </div>
-      <div class="countdown-item">
-        <span class="countdown-number" id="hours">00</span>
-        <span class="countdown-label">Hours</span>
-      </div>
-      <div class="countdown-item">
-        <span class="countdown-number" id="minutes">00</span>
-        <span class="countdown-label">Minutes</span>
-      </div>
-      <div class="countdown-item">
-        <span class="countdown-number" id="seconds">00</span>
-        <span class="countdown-label">Seconds</span>
-      </div>
-    </div>
-    
-    <p>Get ready for an unforgettable night of fun, games, and fabulousness!</p>
-    <a href="checkin.html" style="color: #ff8c00; text-decoration: none; font-weight: bold;">RSVP Now →</a>
-  </div>
+  <div class="content-box-buttons">
+    <h1>More comming soon...</h1>
+    <p>On the night of the party you'll be able to view all the confessions made to date here.</p>
+    <p>But for now, I invite you to make use of the confession bot below:</p>
+</div>
 
-  <div class="content-box">
-      <h1>Party Menu</h1>
+  <!-- Chatling Popup Widget -->
+<script> window.chtlConfig = { chatbotId: "1527145964", display: "page_inline" } </script>
+<div id="chtl-inline-bot" style="width: 100%; height: 500px;"></div>
+<script async data-id="1527145964" data-display="page_inline" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
+
+<div class="content-box-buttons">
+    <h1>Party Menu</h1>
+    <div class="button-container">
         <button onclick="window.location.href='index.html'">Home</button>
-        <button onclick="window.location.href='checkin.html'">Checkin/RSVP</button>
+        <button onclick="window.location.href='countdown.html'">Countdown</button>
         <button onclick="window.location.href='noticeboard.html'">Noticeboard</button>
-        <button onclick="window.location.href='confessionshtml'">Confessions</button>
-  </div>
+        <button onclick="window.location.href='checkin.html'">Check In</button>
+    </div>
+</div>
+
+
+
   <footer>
     Made with love for the drama queens & night creatures 🌙
   </footer>
 
-  <!-- Waves Animation (same as original) -->
+
+  <!-- Waves Animation -->
   <script>
-    // Same wave animation script as in your original code
     class Grad {
       constructor(x, y, z) {
         this.x = x; this.y = y; this.z = z;
@@ -299,29 +297,31 @@
       }
 
       function setLines() {
-        const { width, height } = bounding;
-        lines = [];
-        const oWidth = width + 200, oHeight = height + 30;
-        const { xGap, yGap } = config;
-        const totalLines = Math.ceil(oWidth / xGap);
-        const totalPoints = Math.ceil(oHeight / yGap);
-        const xStart = (width - xGap * totalLines) / 2;
-        const yStart = (height - yGap * totalPoints) / 2;
+  const { width, height } = bounding;
+  lines = [];
+  const oWidth = width + 200, oHeight = height + 30;
+  const { xGap, yGap } = config;
+  const totalLines = Math.ceil(oWidth / xGap);
+  const totalPoints = Math.ceil(oHeight / yGap);
+  const xStart = (width - xGap * totalLines) / 2;
+  const yStart = (height - yGap * totalPoints) / 2;
 
-        for (let i = 0; i <= totalLines; i++) {
-          const pts = [];
-          for (let j = 0; j <= totalPoints; j++) {
-            pts.push({
-              x: xStart + xGap * i,
-              y: yStart + yGap * j,
-              wave: { x: 0, y: 0 },
-              cursor: { x: 0, y: 0, vx: 0, vy: 0 }
-            });
-          }
-          pts.color = prideColors[Math.floor(Math.random() * prideColors.length)];
-          lines.push(pts);
-        }
-      }
+  for (let i = 0; i <= totalLines; i++) {
+    const pts = [];
+    for (let j = 0; j <= totalPoints; j++) {
+      pts.push({
+        x: xStart + xGap * i,
+        y: yStart + yGap * j,
+        wave: { x: 0, y: 0 },
+        cursor: { x: 0, y: 0, vx: 0, vy: 0 }
+      });
+    }
+    pts.color = prideColors[Math.floor(Math.random() * prideColors.length)]; // ✅ Save color directly on array
+    lines.push(pts);
+  }
+}
+
+
 
       function movePoints(time) {
         const { waveSpeedX, waveSpeedY, waveAmpX, waveAmpY, friction, tension, maxCursorMove } = config;
@@ -362,34 +362,36 @@
       }
 
       function drawLines() {
-        const { width, height } = bounding;
-        ctx.clearRect(0, 0, width, height);
+  const { width, height } = bounding;
+  ctx.clearRect(0, 0, width, height);
 
-        // Optional pride glow background
-        const gradient = ctx.createLinearGradient(0, 0, width, height);
-        gradient.addColorStop(0, "rgba(228, 3, 3, 0.1)");
-        gradient.addColorStop(0.2, "rgba(255, 140, 0, 0.1)");
-        gradient.addColorStop(0.4, "rgba(255, 237, 0, 0.1)");
-        gradient.addColorStop(0.6, "rgba(0, 128, 38, 0.1)");
-        gradient.addColorStop(0.8, "rgba(0, 77, 255, 0.1)");
-        gradient.addColorStop(1, "rgba(117, 7, 135, 0.1)");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
+  // Optional pride glow background
+  const gradient = ctx.createLinearGradient(0, 0, width, height);
+  gradient.addColorStop(0, "rgba(228, 3, 3, 0.1)");
+  gradient.addColorStop(0.2, "rgba(255, 140, 0, 0.1)");
+  gradient.addColorStop(0.4, "rgba(255, 237, 0, 0.1)");
+  gradient.addColorStop(0.6, "rgba(0, 128, 38, 0.1)");
+  gradient.addColorStop(0.8, "rgba(0, 77, 255, 0.1)");
+  gradient.addColorStop(1, "rgba(117, 7, 135, 0.1)");
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, width, height);
 
-        lines.forEach((points) => {
-          ctx.beginPath();
-          let p1 = moved(points[0], false);
-          ctx.moveTo(p1.x, p1.y);
-          for (let idx = 1; idx < points.length; idx++) {
-            const p = points[idx];
-            const p2 = moved(p, true);
-            ctx.lineTo(p2.x, p2.y);
-          }
-          ctx.strokeStyle = points.color || "#fff";
-          ctx.lineWidth = 2;
-          ctx.stroke();
-        });
-      }
+  lines.forEach((points) => {
+    ctx.beginPath();
+    let p1 = moved(points[0], false);
+    ctx.moveTo(p1.x, p1.y);
+    for (let idx = 1; idx < points.length; idx++) {
+      const p = points[idx];
+      const p2 = moved(p, true);
+      ctx.lineTo(p2.x, p2.y);
+    }
+    ctx.strokeStyle = points.color || "#fff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+}
+
+
 
       function tick(t) {
         mouse.sx += (mouse.x - mouse.sx) * 0.1;
@@ -437,39 +439,41 @@
       window.addEventListener("mousemove", onMouseMove);
       window.addEventListener("touchmove", onTouchMove, { passive: false });
     });
-  </script>
 
-  <!-- Countdown Timer -->
-  <script>
+        // Better touch handling for mobile
     document.addEventListener('DOMContentLoaded', function() {
-      const countdownDate = new Date('July 25, 2025 17:00:00').getTime();
-      
-      function updateCountdown() {
-        const now = new Date().getTime();
-        const distance = countdownDate - now;
-        
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        
-        document.getElementById('days').textContent = days.toString().padStart(2, '0');
-        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-        
-        if (distance < 0) {
-          clearInterval(countdownInterval);
-          document.getElementById('days').textContent = '00';
-          document.getElementById('hours').textContent = '00';
-          document.getElementById('minutes').textContent = '00';
-          document.getElementById('seconds').textContent = '00';
+        // Make buttons more responsive to touch
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', function() {
+                this.classList.add('active');
+            });
+            
+            button.addEventListener('touchend', function() {
+                this.classList.remove('active');
+            });
+        });
+
+        // Prevent zooming on double-tap
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        // Adjust chat widget position on mobile
+        function adjustChatWidget() {
+            if (window.innerWidth <= 600) {
+                const chatWidget = document.querySelector('#chtl-script');
+                if (chatWidget) {
+                    chatWidget.style.bottom = '80px';
+                }
+            }
         }
-      }
-      
-      updateCountdown();
-      const countdownInterval = setInterval(updateCountdown, 1000);
+        
+        window.addEventListener('resize', adjustChatWidget);
+        adjustChatWidget();
     });
   </script>
+
+  
 </body>
 </html>

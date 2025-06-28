@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AfterDark Party RSVP</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #121212;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        form {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #2d2d2d;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 4px;
+        }
+        button {
+            background: #6e44ff;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #5a36d6;
+        }
+        #ticketContainer {
+            display: none;
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            margin-top: 20px;
+            position: relative;
+        }
+        .ticket {
+            background: #121212;
+            border: 2px dashed #6e44ff;
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+            position: relative;
+        }
+        .ticket-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .ticket-header h2 {
+            color: #6e44ff;
+            margin: 0;
+        }
+        .ticket-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .ticket-info {
+            flex: 1;
+            min-width: 200px;
+        }
+        .ticket-qr {
+            flex: 0 0 150px;
+            text-align: center;
+        }
+        #qrCodeCanvas {
+            width: 150px;
+            height: 150px;
+            background: white;
+            padding: 10px;
+            margin: 0 auto;
+        }
+        .ticket-footer {
+            margin-top: 20px;
+            font-size: 12px;
+            text-align: center;
+            color: #888;
+        }
+        .download-btn {
+            background: #6e44ff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: inline-block;
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AfterDark Party RSVP</h1>
+        <form id="rsvpForm">
+            <input type="text" id="name" placeholder="Your Full Name" required>
+            <input type="email" id="email" placeholder="Your Email (for updates)" required>
+            <select id="ticketType" required>
+                <option value="" disabled selected>Select Ticket Type</option>
+                <option value="general">General Admission</option>
+                <option value="vip">VIP Experience</option>
+                <option value="table">Bottle Service</option>
+            </select>
+            <input type="number" id="guests" placeholder="Number in Your Group" min="1" value="1" required>
+            <textarea id="specialRequests" placeholder="Special Requests (dietary, accessibility, etc.)"></textarea>
+            <button type="submit">Confirm Attendance</button>
+        </form>
+
+        <div id="ticketContainer">
+            <div class="ticket" id="ticket">
+                <div class="ticket-header">
+                    <h2>AfterDark Party</h2>
+                    <p>Exclusive Nightlife Experience</p>
+                </div>
+                <div class="ticket-body">
+                    <div class="ticket-info">
+                        <p><strong>Name:</strong> <span id="ticketName"></span></p>
+                        <p><strong>Ticket Type:</strong> <span id="ticketTypeDisplay"></span></p>
+                        <p><strong>Group Size:</strong> <span id="ticketGuests"></span></p>
+                        <p><strong>Date:</strong> Saturday, November 18, 2023</p>
+                        <p><strong>Time:</strong> 9:00 PM - 2:00 AM</p>
+                        <p><strong>Location:</strong> Secret Venue (revealed 24h before)</p>
+                        <p><strong>Ticket ID:</strong> <span id="ticketId"></span></p>
+                    </div>
+                    <div class="ticket-qr">
+                        <canvas id="qrCodeCanvas"></canvas>
+                        <p>Scan at entry</p>
+                    </div>
+                </div>
+                <div class="ticket-footer">
+                    <p>This ticket is non-transferable. Must present ID matching name on ticket.</p>
+                    <p>Dress code: AfterDark elegant</p>
+                </div>
+            </div>
+            <button id="downloadBtn" class="download-btn">Download Ticket</button>
+            <p>Take a screenshot or download your ticket. You won't be able to access it again.</p>
+        </div>
+    </div>
+
+    <script>
+        // Generate a unique ticket ID
+        function generateTicketId() {
+            const prefix = 'AD';
+            const timestamp = Date.now().toString(36).toUpperCase();
+            const random = Math.random().toString(36).substr(2, 5).toUpperCase();
+            return `${prefix}-${timestamp}-${random}`;
+        }
+
+        // Create confetti effect
+        function createConfetti() {
+            const colors = ['#6e44ff', '#ff44a8', '#44ff6e', '#ffd166', '#06d6a0'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = -10 + 'px';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                
+                const animation = confetti.animate([
+                    { top: '-10px', opacity: 1 },
+                    { top: '100vh', opacity: 0 }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.3, 1)'
+                });
+                
+                document.body.appendChild(confetti);
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+
+        // Download ticket as image
+        function downloadTicket() {
+            const ticket = document.getElementById('ticket');
+            html2canvas(ticket, {
+                backgroundColor: '#121212',
+                scale: 2
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'AfterDark-Ticket.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        // Fixed QR Code Generation
+        document.getElementById('rsvpForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const ticketType = document.getElementById('ticketType').value;
+            const guests = document.getElementById('guests').value;
+            const requests = document.getElementById('specialRequests').value;
+            const ticketId = generateTicketId();
+            
+            // Display ticket information
+            document.getElementById('ticketName').textContent = name;
+            document.getElementById('ticketTypeDisplay').textContent = 
+                ticketType === 'general' ? 'General Admission' :
+                ticketType === 'vip' ? 'VIP Experience' : 'Bottle Service';
+            document.getElementById('ticketGuests').textContent = guests;
+            document.getElementById('ticketId').textContent = ticketId;
+            
+            // Generate QR code data
+            const qrData = JSON.stringify({
+                ticketId: ticketId,
+                name: name,
+                type: ticketType,
+                guests: guests,
+                timestamp: Date.now()
+            });
+            
+            // Get the canvas element
+            const canvas = document.getElementById('qrCodeCanvas');
+            
+            // Generate QR code directly to canvas
+            QRCode.toCanvas(canvas, qrData, {
+                width: 150,
+                color: {
+                    dark: '#6e44ff',
+                    light: '#121212'
+                },
+                errorCorrectionLevel: 'H'
+            }, function(error) {
+                if (error) {
+                    console.error('QR Code generation error:', error);
+                    alert('Error generating ticket QR code. Please try again.');
+                    return;
+                }
+                
+                // Show ticket and hide form
+                document.getElementById('rsvpForm').style.display = 'none';
+                document.getElementById('ticketContainer').style.display = 'block';
+                
+                // Create celebration effect
+                createConfetti();
+                
+                // Scroll to ticket
+                document.getElementById('ticketContainer').scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Set up download button
+        document.getElementById('downloadBtn').addEventListener('click', downloadTicket);
+    </script>
+</body>
+</html>
