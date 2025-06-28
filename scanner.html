@@ -71,38 +71,30 @@
 
         const html5QrCode = new Html5Qrcode("reader");
 
-        Html5Qrcode.getCameras().then(devices => {
-            if (devices && devices.length) {
-                const cameraId = devices[0].id;
-                html5QrCode.start(
-                    cameraId,
-                    { fps: 10, qrbox: 250 },
-                    qrCodeMessage => {
-                        html5QrCode.stop(); // Stop scanning after one successful scan
-                        showResult(qrCodeMessage, true);
+Html5Qrcode.getCameras().then(devices => {
+    const backCam = devices.find(device => /back|rear|environment/i.test(device.label));
+    const cameraId = backCam ? backCam.id : devices[0].id;
 
-                        // Restart scanner after 5 seconds to allow next guest
-                        setTimeout(() => {
-                            resultBox.style.display = "none";
-                            html5QrCode.start(
-                                cameraId,
-                                { fps: 10, qrbox: 250 },
-                                qrCodeMessage => {
-                                    html5QrCode.stop();
-                                    showResult(qrCodeMessage, true);
-                                },
-                                errorMessage => {}
-                            );
-                        }, 5000);
-                    },
-                    errorMessage => {
-                        // Ignore scan errors silently
-                    }
-                );
-            }
-        }).catch(err => {
-            alert("Unable to access camera. Please ensure browser permissions are enabled.");
-        });
+    html5QrCode.start(
+        cameraId,
+        { fps: 10, qrbox: 250 },
+        qrCodeMessage => {
+            html5QrCode.stop();
+            showResult(qrCodeMessage, true);
+            setTimeout(() => {
+                resultBox.style.display = "none";
+                html5QrCode.start(cameraId, { fps: 10, qrbox: 250 }, qrCodeMessage => {
+                    html5QrCode.stop();
+                    showResult(qrCodeMessage, true);
+                }, () => {});
+            }, 5000);
+        },
+        () => {}
+    );
+}).catch(err => {
+    alert("Unable to access camera. Please ensure camera permissions are granted.");
+});
+
     </script>
 </body>
 </html>
