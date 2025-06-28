@@ -510,22 +510,22 @@
         setLines();
       }
 
-      function onMouseMove(e) { updateMouse(e.clientX, e.clientY); }
-      function onTouchMove(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        updateMouse(touch.clientX, touch.clientY);
-      }
+      //function onMouseMove(e) { updateMouse(e.clientX, e.clientY); }
+      //function onTouchMove(e) {
+      //  e.preventDefault();
+      //  const touch = e.touches[0];
+      //  updateMouse(touch.clientX, touch.clientY);
+      //}
 
-      function updateMouse(x, y) {
-        mouse.x = x - bounding.left;
-        mouse.y = y - bounding.top;
-        if (!mouse.set) {
-          mouse.sx = mouse.x; mouse.sy = mouse.y;
-          mouse.lx = mouse.x; mouse.ly = mouse.y;
-          mouse.set = true;
-        }
-      }
+      //function updateMouse(x, y) {
+      //  mouse.x = x - bounding.left;
+      //  mouse.y = y - bounding.top;
+      //  if (!mouse.set) {
+      //    mouse.sx = mouse.x; mouse.sy = mouse.y;
+      //    mouse.lx = mouse.x; mouse.ly = mouse.y;
+      //    mouse.set = true;
+      //  }
+      //}
 
       // Initialize
       setSize();
@@ -549,11 +549,6 @@
                 this.classList.remove('active');
             });
         });
-
-        // Prevent zooming on double-tap
-        document.addEventListener('dblclick', function(e) {
-            e.preventDefault();
-        }, { passive: false });
 
         // Adjust chat widget position on mobile
         function adjustChatWidget() {
