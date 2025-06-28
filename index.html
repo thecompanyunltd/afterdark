@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <!-- Updated viewport meta tag to allow zooming -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
   <title>Gay After Dark Confessions</title>
   <style>
     /* Base styles */
@@ -21,6 +22,10 @@
       position: relative;
       min-height: 100vh;
       -webkit-text-size-adjust: 100%;
+      /* Enable scrolling */
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .waves-container {
@@ -30,7 +35,6 @@
       width: 100%;
       height: 100%;
       z-index: -1;
-      pointer-events:none;
       overflow: hidden;
     }
 
@@ -117,6 +121,22 @@
       gap: 0.5rem;
     }
 
+    /* Mobile menu toggle */
+    .menu-toggle {
+      display: none;
+      background: linear-gradient(45deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
+      color: white;
+      border: none;
+      padding: 1rem;
+      border-radius: 8px;
+      font-weight: bold;
+      margin: 0.5rem auto;
+      width: calc(100% - 2rem);
+      max-width: 800px;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
     /* Mobile-specific adjustments */
     @media (max-width: 600px) {
       header img {
@@ -137,6 +157,26 @@
       #chtl-script {
         bottom: 80px !important;
       }
+
+      /* Mobile menu styles */
+      .menu-toggle {
+        display: block;
+      }
+
+      .content-box-buttons {
+        display: none;
+        position: relative;
+      }
+
+      .content-box-buttons.mobile-visible {
+        display: block;
+        animation: fadeIn 0.3s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
     }
 
     /* Very small devices */
@@ -154,7 +194,7 @@
         font-size: 0.9rem;
       }
     }
-</style>
+  </style>
 </head>
 <body>
   <div class="waves-container">
@@ -175,15 +215,19 @@
     <p>{Click on the chat icon on the bottom right of your screen to start your confession}</p>
   </div>
 
-<div class="content-box-buttons">
+  <!-- Mobile Menu Toggle Button -->
+  <button class="menu-toggle" id="menuToggle">Party Menu ▼</button>
+
+  <!-- Party Menu -->
+  <div class="content-box-buttons" id="partyMenu">
     <h1>Party Menu</h1>
     <div class="button-container">
-        <button onclick="window.location.href='countdown.html'">Countdown</button>
-        <button onclick="window.location.href='noticeboard.html'">Noticeboard</button>
-        <button onclick="window.location.href='checkin.html'">Check In</button>
-        <button onclick="window.location.href='confessions.html'">Confession Page</button>
+      <button onclick="window.location.href='countdown.html'">Countdown</button>
+      <button onclick="window.location.href='noticeboard.html'">Noticeboard</button>
+      <button onclick="window.location.href='checkin.html'">Check In</button>
+      <button onclick="window.location.href='confessions.html'">Confession Page</button>
     </div>
-</div>
+  </div>
 
   <footer>
     Made with love for the drama queens & night creatures 🌙
@@ -195,6 +239,55 @@
   </script>
   <script async data-id="1527145964" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
 
+  <!-- Mobile Menu Toggle Script -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const menuToggle = document.getElementById('menuToggle');
+      const partyMenu = document.getElementById('partyMenu');
+      
+      // Toggle mobile menu
+      menuToggle.addEventListener('click', function() {
+        partyMenu.classList.toggle('mobile-visible');
+        this.textContent = this.textContent.includes('▲') ? 
+          'Party Menu ▼' : 'Party Menu ▲';
+      });
+
+      // Better touch handling for mobile
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(button => {
+        button.addEventListener('touchstart', function() {
+          this.classList.add('active');
+        });
+        
+        button.addEventListener('touchend', function() {
+          this.classList.remove('active');
+        });
+      });
+
+      // Prevent zooming on double-tap (but allow pinch zoom)
+      let lastTouchEnd = 0;
+      document.addEventListener('touchend', function(event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      }, { passive: false });
+
+      // Adjust chat widget position on mobile
+      function adjustChatWidget() {
+        if (window.innerWidth <= 600) {
+          const chatWidget = document.querySelector('#chtl-script');
+          if (chatWidget) {
+            chatWidget.style.bottom = '80px';
+          }
+        }
+      }
+      
+      window.addEventListener('resize', adjustChatWidget);
+      adjustChatWidget();
+    });
+  </script>
   <!-- Waves Animation -->
   <script>
     class Grad {
