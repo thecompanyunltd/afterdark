@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AfterDark Ticket Check</title>
+    <title>AfterDark Ticket Scanner</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <style>
         body {
@@ -11,109 +11,72 @@
             text-align: center;
             padding: 20px;
         }
-        h1 {
-            color: #6e44ff;
-        }
         #scanner-container {
             margin: 20px auto;
-            width: 300px;
-            position: relative;
+            width: 80%;
+            max-width: 500px;
         }
         #scanner {
             width: 100%;
-            border: 3px solid #6e44ff;
             background: black;
+            border: 3px solid #6e44ff;
         }
         #result {
-            margin-top: 20px;
+            margin: 20px auto;
             padding: 15px;
-            border-radius: 5px;
             max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
+            border-radius: 8px;
         }
         .valid {
-            background: #1e3a1e;
-            color: #4caf50;
-            border: 1px solid #4caf50;
+            background: #1a2e1a;
+            border: 1px solid #4CAF50;
         }
         .invalid {
-            background: #3a1e1e;
-            color: #f44336;
-            border: 1px solid #f44336;
+            background: #2e1a1a;
+            border: 1px solid #F44336;
         }
-        .ticket-info {
-            text-align: left;
-            margin-top: 15px;
-        }
-        .ticket-info p {
-            margin: 5px 0;
-        }
-        .status-icon {
-            font-size: 50px;
-            margin-bottom: 15px;
-        }
-        #startButton {
+        button {
             background: #6e44ff;
             color: white;
             border: none;
-            padding: 12px 25px;
-            font-size: 16px;
+            padding: 12px 20px;
+            margin: 10px;
             border-radius: 4px;
             cursor: pointer;
-            margin-top: 20px;
-        }
-        #startButton:hover {
-            background: #5a36d6;
         }
     </style>
 </head>
 <body>
-    <h1>AfterDark Ticket Verification</h1>
+    <h1>AfterDark Ticket Scanner</h1>
     <div id="scanner-container">
         <video id="scanner" playsinline></video>
     </div>
     <button id="startButton">Start Scanner</button>
     <div id="result"></div>
-    
+
     <script>
         const video = document.getElementById("scanner");
         const resultDiv = document.getElementById("result");
-        const startButton = document.getElementById("startButton");
         let stream = null;
 
-        // Check for camera access
         function startScanner() {
-            startButton.style.display = 'none';
-            resultDiv.innerHTML = '<p>Scanning for tickets...</p>';
-            
             navigator.mediaDevices.getUserMedia({ 
                 video: { 
                     facingMode: "environment",
                     width: { ideal: 1280 },
                     height: { ideal: 720 }
                 } 
-            })
-            .then(function(s) {
+            }).then(function(s) {
                 stream = s;
                 video.srcObject = stream;
-                video.setAttribute("playsinline", true);
                 video.play();
-                requestAnimationFrame(tick);
-            })
-            .catch(function(err) {
-                resultDiv.innerHTML = `<p class="invalid">Error accessing camera: ${err}</p>`;
-                startButton.style.display = 'block';
+                scanTicket();
+            }).catch(function(err) {
+                resultDiv.innerHTML = `<div class="invalid">Camera error: ${err.message}</div>`;
             });
         }
 
-        function stopScanner() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-            }
-        }
-
-        function tick() {
+        function scanTicket() {
             if (video.readyState === video.HAVE_ENOUGH_DATA) {
                 const canvas = document.createElement("canvas");
                 canvas.width = video.videoWidth;
@@ -123,56 +86,63 @@
                 
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                    inversionAttempts: "dontInvert",
+                    inversionAttempts: "dontInvert"
                 });
                 
                 if (code) {
                     try {
                         const ticketData = JSON.parse(code.data);
                         if (ticketData.ticketId && ticketData.ticketId.startsWith("AD-")) {
-                            // Valid ticket found
-                            resultDiv.className = "valid";
-                            resultDiv.innerHTML = `
-                                <div class="status-icon">✓</div>
-                                <h2>VALID TICKET</h2>
-                                <div class="ticket-info">
-                                    <p><strong>Name:</strong> ${ticketData.name}</p>
-                                    <p><strong>Ticket Type:</strong> ${formatTicketType(ticketData.type)}</p>
-                                    <p><strong>Group Size:</strong> ${ticketData.guests}</p>
-                                    <p><strong>Ticket ID:</strong> ${ticketData.ticketId}</p>
-                                    <p><strong>Scanned:</strong> ${new Date().toLocaleString()}</p>
-                                </div>
-                            `;
-                            stopScanner();
-                        } else {
-                            throw new Error("Invalid ticket format");
+                            showValidTicket(ticketData);
+                            return; // Stop scanning after successful read
                         }
-                    } catch (e) {
-                        resultDiv.className = "invalid";
-                        resultDiv.innerHTML = `
-                            <div class="status-icon">✗</div>
-                            <h2>INVALID TICKET</h2>
-                            <p>This QR code is not a valid AfterDark ticket.</p>
-                        `;
+                    } catch(e) {
+                        showInvalidTicket();
                     }
                 }
             }
-            requestAnimationFrame(tick);
+            requestAnimationFrame(scanTicket);
         }
 
-        function formatTicketType(type) {
-            switch(type) {
-                case 'general': return 'General Admission';
-                case 'vip': return 'VIP Experience';
-                case 'table': return 'Bottle Service';
-                default: return type;
+        function showValidTicket(ticket) {
+            stopScanner();
+            resultDiv.innerHTML = `
+                <div class="valid">
+                    <h2>✓ VALID TICKET</h2>
+                    <p><strong>Name:</strong> ${ticket.name}</p>
+                    <p><strong>Type:</strong> ${formatTicketType(ticket.type)}</p>
+                    <p><strong>Party Size:</strong> ${ticket.guests}</p>
+                    <p><strong>Ticket ID:</strong> ${ticket.ticketId}</p>
+                    <p>Scanned at: ${new Date().toLocaleString()}</p>
+                </div>
+            `;
+        }
+
+        function showInvalidTicket() {
+            resultDiv.innerHTML = `
+                <div class="invalid">
+                    <h2>✗ INVALID TICKET</h2>
+                    <p>This QR code is not a valid AfterDark ticket</p>
+                </div>
+            `;
+        }
+
+        function stopScanner() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
             }
         }
 
-        startButton.addEventListener('click', startScanner);
+        function formatTicketType(type) {
+            const types = {
+                'general': 'General Admission',
+                'vip': 'VIP Experience',
+                'table': 'Bottle Service'
+            };
+            return types[type] || type;
+        }
 
-        // Clean up when page is closed
-        window.addEventListener('beforeunload', stopScanner);
+        document.getElementById("startButton").addEventListener("click", startScanner);
     </script>
 </body>
 </html>
