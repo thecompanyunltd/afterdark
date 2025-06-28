@@ -1,100 +1,137 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AfterDark Ticket Scanner</title>
-    <script src="https://unpkg.com/html5-qrcode"></script>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: #121212;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 30px;
-        }
-        #reader {
-            width: 500px;
-            margin-bottom: 20px;
-        }
-        .result-box {
-            background: #1e1e1e;
-            padding: 20px;
-            border-radius: 10px;
-            width: 100%;
-            max-width: 400px;
-            text-align: left;
-            border-left: 5px solid #6e44ff;
-        }
-        .result-box.valid {
-            border-color: #06d6a0;
-        }
-        .result-box.invalid {
-            border-color: #ff4d4f;
-        }
-        .status {
-            font-weight: bold;
-            color: #6e44ff;
-        }
-    </style>
+  <title>AfterDark Ticket Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #121212;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 1;
+      margin: 0 auto 20px;
+    }
+
+    .result-box {
+      background: #1e1e1e;
+      border-left: 6px solid #6e44ff;
+      padding: 16px;
+      border-radius: 12px;
+      max-width: 480px;
+      width: 100%;
+      font-size: 1rem;
+      box-sizing: border-box;
+    }
+
+    .result-box.valid {
+      border-left-color: #06d6a0;
+    }
+
+    .result-box.invalid {
+      border-left-color: #ff4d4f;
+    }
+
+    .status {
+      font-weight: bold;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+      color: #6e44ff;
+    }
+
+    @media (max-width: 400px) {
+      .result-box {
+        font-size: 0.95rem;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <h1>AfterDark Ticket Scanner</h1>
-    <div id="reader"></div>
-    <div id="result" class="result-box" style="display:none;"></div>
+  <h1>Scan Ticket</h1>
+  <div id="reader"></div>
+  <div id="result" class="result-box" style="display: none;"></div>
 
-    <script>
-        const resultBox = document.getElementById('result');
+  <script>
+    const resultBox = document.getElementById('result');
 
-        function showResult(content, isValid = true) {
-            resultBox.classList.remove("valid", "invalid");
-            resultBox.classList.add(isValid ? "valid" : "invalid");
-            resultBox.style.display = "block";
+    function showResult(content, isValid = true) {
+      resultBox.classList.remove("valid", "invalid");
+      resultBox.classList.add(isValid ? "valid" : "invalid");
+      resultBox.style.display = "block";
 
-            try {
-                const data = JSON.parse(content);
-                resultBox.innerHTML = `
-                    <p class="status">${isValid ? '✅ Ticket Validated' : '❌ Ticket Invalid'}</p>
-                    <p><strong>Name:</strong> ${data.name}</p>
-                    <p><strong>Ticket Type:</strong> ${data.type}</p>
-                    <p><strong>Guests:</strong> ${data.guests}</p>
-                    <p><strong>Ticket ID:</strong> ${data.ticketId}</p>
-                `;
-            } catch (e) {
-                resultBox.innerHTML = `
-                    <p class="status">❌ Ticket Invalid</p>
-                    <p>The QR code does not contain a recognizable ticket.</p>
-                `;
-            }
-        }
+      try {
+        const data = JSON.parse(content);
+        resultBox.innerHTML = `
+          <div class="status">${isValid ? '✅ Ticket Validated' : '❌ Ticket Invalid'}</div>
+          <p><strong>Name:</strong> ${data.name}</p>
+          <p><strong>Ticket Type:</strong> ${data.type}</p>
+          <p><strong>Guests:</strong> ${data.guests}</p>
+          <p><strong>Ticket ID:</strong> ${data.ticketId}</p>
+        `;
+      } catch (e) {
+        resultBox.innerHTML = `
+          <div class="status">❌ Ticket Invalid</div>
+          <p>The QR code could not be read or is not a valid ticket.</p>
+        `;
+      }
+    }
 
-        const html5QrCode = new Html5Qrcode("reader");
+    const html5QrCode = new Html5Qrcode("reader");
 
-Html5Qrcode.getCameras().then(devices => {
-    const backCam = devices.find(device => /back|rear|environment/i.test(device.label));
-    const cameraId = backCam ? backCam.id : devices[0].id;
+    Html5Qrcode.getCameras().then(devices => {
+      const backCam = devices.find(device => /back|rear|environment/i.test(device.label));
+      const cameraId = backCam ? backCam.id : devices[0].id;
 
-    html5QrCode.start(
+      html5QrCode.start(
         cameraId,
-        { fps: 10, qrbox: 250 },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
         qrCodeMessage => {
-            html5QrCode.stop();
-            showResult(qrCodeMessage, true);
-            setTimeout(() => {
-                resultBox.style.display = "none";
-                html5QrCode.start(cameraId, { fps: 10, qrbox: 250 }, qrCodeMessage => {
-                    html5QrCode.stop();
-                    showResult(qrCodeMessage, true);
-                }, () => {});
-            }, 5000);
+          html5QrCode.stop();
+          showResult(qrCodeMessage, true);
+
+          setTimeout(() => {
+            resultBox.style.display = "none";
+            html5QrCode.start(
+              cameraId,
+              { fps: 10, qrbox: { width: 250, height: 250 } },
+              qrCodeMessage => {
+                html5QrCode.stop();
+                showResult(qrCodeMessage, true);
+              },
+              () => {}
+            );
+          }, 5000);
         },
         () => {}
-    );
-}).catch(err => {
-    alert("Unable to access camera. Please ensure camera permissions are granted.");
-});
+      );
+    }).catch(err => {
+      alert("Camera access failed. Please check permissions and try again.");
+    });
+  </script>
 
-    </script>
 </body>
 </html>
+
