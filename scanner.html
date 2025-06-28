@@ -2,202 +2,107 @@
 <html>
 <head>
     <title>AfterDark Ticket Scanner</title>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             background: #121212;
-            color: white;
-            text-align: center;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+        }
+        #reader {
+            width: 300px;
+            margin-bottom: 20px;
+        }
+        .result-box {
+            background: #1e1e1e;
             padding: 20px;
-        }
-        #scanner-container {
-            margin: 20px auto;
-            width: 90%;
-            max-width: 400px;
-        }
-        #scanner {
+            border-radius: 10px;
             width: 100%;
-            background: black;
-            border: 3px solid #6e44ff;
-        }
-        #result {
-            margin: 20px auto;
-            padding: 15px;
             max-width: 400px;
-            border-radius: 8px;
+            text-align: left;
+            border-left: 5px solid #6e44ff;
         }
-        .valid {
-            background: #1a2e1a;
-            border: 1px solid #4CAF50;
+        .result-box.valid {
+            border-color: #06d6a0;
         }
-        .invalid {
-            background: #2e1a1a;
-            border: 1px solid #F44336;
+        .result-box.invalid {
+            border-color: #ff4d4f;
         }
-        button {
-            background: #6e44ff;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            margin: 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .status-icon {
-            font-size: 48px;
-            margin: 10px 0;
+        .status {
+            font-weight: bold;
+            color: #6e44ff;
         }
     </style>
 </head>
 <body>
+
     <h1>AfterDark Ticket Scanner</h1>
-    <div id="scanner-container">
-        <video id="scanner" playsinline></video>
-    </div>
-    <button id="startButton">Start Scanner</button>
-    <div id="result"></div>
+    <div id="reader"></div>
+    <div id="result" class="result-box" style="display:none;"></div>
 
     <script>
-        const video = document.getElementById("scanner");
-        const resultDiv = document.getElementById("result");
-        const startButton = document.getElementById("startButton");
-        let stream = null;
-        let scanning = false;
+        const resultBox = document.getElementById('result');
 
-        // Improved scanner function
-        function startScanner() {
-            startButton.disabled = true;
-            resultDiv.innerHTML = "<p>Initializing scanner...</p>";
-            
-            navigator.mediaDevices.getUserMedia({ 
-                video: {
-                    facingMode: "environment",
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                }
-            }).then(function(s) {
-                stream = s;
-                video.srcObject = stream;
-                video.play();
-                scanning = true;
-                scanFrame();
-            }).catch(function(err) {
-                resultDiv.innerHTML = `<div class="invalid">Error: ${err.message}</div>`;
-                startButton.disabled = false;
-            });
-        }
+        function showResult(content, isValid = true) {
+            resultBox.classList.remove("valid", "invalid");
+            resultBox.classList.add(isValid ? "valid" : "invalid");
+            resultBox.style.display = "block";
 
-        function scanFrame() {
-            if (!scanning) return;
-            
-            if (video.readyState >= video.HAVE_ENOUGH_DATA) {
-                const canvas = document.createElement("canvas");
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const ctx = canvas.getContext("2d");
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                    inversionAttempts: "dontInvert",
-                    maxScansPerFrame: 10
-                });
-                
-                if (code) {
-                    processTicket(code.data);
-                } else {
-                    requestAnimationFrame(scanFrame);
-                }
-            } else {
-                requestAnimationFrame(scanFrame);
-            }
-        }
-
-        function processTicket(data) {
             try {
-                // Handle both formats (JSON and pipe-delimited)
-                let ticketData;
-                if (data.startsWith("{")) {
-                    ticketData = JSON.parse(data);
-                } else if (data.startsWith("ADTICKET|")) {
-                    const parts = data.split("|");
-                    ticketData = {
-                        ticketId: parts[1],
-                        name: parts[2],
-                        type: parts[3],
-                        guests: parts[4]
-                    };
-                } else {
-                    throw new Error("Invalid ticket format");
-                }
-
-                if (ticketData.ticketId && ticketData.ticketId.startsWith("AD-")) {
-                    showResult(true, ticketData);
-                } else {
-                    throw new Error("Invalid ticket ID");
-                }
+                const data = JSON.parse(content);
+                resultBox.innerHTML = `
+                    <p class="status">${isValid ? '✅ Ticket Validated' : '❌ Ticket Invalid'}</p>
+                    <p><strong>Name:</strong> ${data.name}</p>
+                    <p><strong>Ticket Type:</strong> ${data.type}</p>
+                    <p><strong>Guests:</strong> ${data.guests}</p>
+                    <p><strong>Ticket ID:</strong> ${data.ticketId}</p>
+                `;
             } catch (e) {
-                showResult(false);
-                // Continue scanning after brief delay
-                setTimeout(() => {
-                    scanning = true;
-                    scanFrame();
-                }, 2000);
-            }
-        }
-
-        function showResult(valid, ticketData) {
-            scanning = false;
-            stopScanner();
-            
-            if (valid) {
-                resultDiv.innerHTML = `
-                    <div class="valid">
-                        <div class="status-icon">✓</div>
-                        <h2>VALID TICKET</h2>
-                        <p><strong>Name:</strong> ${ticketData.name}</p>
-                        <p><strong>Type:</strong> ${formatTicketType(ticketData.type)}</p>
-                        <p><strong>Guests:</strong> ${ticketData.guests}</p>
-                        <p><strong>ID:</strong> ${ticketData.ticketId}</p>
-                    </div>
-                    <button id="resumeButton">Scan Another</button>
+                resultBox.innerHTML = `
+                    <p class="status">❌ Ticket Invalid</p>
+                    <p>The QR code does not contain a recognizable ticket.</p>
                 `;
-                document.getElementById("resumeButton").addEventListener("click", () => {
-                    resultDiv.innerHTML = "";
-                    startScanner();
-                });
-            } else {
-                resultDiv.innerHTML = `
-                    <div class="invalid">
-                        <div class="status-icon">✗</div>
-                        <h2>INVALID TICKET</h2>
-                        <p>Please try again with a valid AfterDark ticket</p>
-                    </div>
-                    <button id="retryButton">Try Again</button>
-                `;
-                document.getElementById("retryButton").addEventListener("click", startScanner);
             }
         }
 
-        function stopScanner() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
+        const html5QrCode = new Html5Qrcode("reader");
+
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                const cameraId = devices[0].id;
+                html5QrCode.start(
+                    cameraId,
+                    { fps: 10, qrbox: 250 },
+                    qrCodeMessage => {
+                        html5QrCode.stop(); // Stop scanning after one successful scan
+                        showResult(qrCodeMessage, true);
+
+                        // Restart scanner after 5 seconds to allow next guest
+                        setTimeout(() => {
+                            resultBox.style.display = "none";
+                            html5QrCode.start(
+                                cameraId,
+                                { fps: 10, qrbox: 250 },
+                                qrCodeMessage => {
+                                    html5QrCode.stop();
+                                    showResult(qrCodeMessage, true);
+                                },
+                                errorMessage => {}
+                            );
+                        }, 5000);
+                    },
+                    errorMessage => {
+                        // Ignore scan errors silently
+                    }
+                );
             }
-            startButton.disabled = false;
-        }
-
-        function formatTicketType(type) {
-            const types = {
-                'general': 'General Admission',
-                'vip': 'VIP Experience',
-                'table': 'Bottle Service'
-            };
-            return types[type] || type;
-        }
-
-        startButton.addEventListener("click", startScanner);
+        }).catch(err => {
+            alert("Unable to access camera. Please ensure browser permissions are enabled.");
+        });
     </script>
 </body>
 </html>
