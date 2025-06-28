@@ -13,8 +13,8 @@
         }
         #scanner-container {
             margin: 20px auto;
-            width: 80%;
-            max-width: 500px;
+            width: 90%;
+            max-width: 400px;
         }
         #scanner {
             width: 100%;
@@ -24,7 +24,7 @@
         #result {
             margin: 20px auto;
             padding: 15px;
-            max-width: 500px;
+            max-width: 400px;
             border-radius: 8px;
         }
         .valid {
@@ -43,6 +43,11 @@
             margin: 10px;
             border-radius: 4px;
             cursor: pointer;
+            font-size: 16px;
+        }
+        .status-icon {
+            font-size: 48px;
+            margin: 10px 0;
         }
     </style>
 </head>
@@ -57,27 +62,37 @@
     <script>
         const video = document.getElementById("scanner");
         const resultDiv = document.getElementById("result");
+        const startButton = document.getElementById("startButton");
         let stream = null;
+        let scanning = false;
 
+        // Improved scanner function
         function startScanner() {
+            startButton.disabled = true;
+            resultDiv.innerHTML = "<p>Initializing scanner...</p>";
+            
             navigator.mediaDevices.getUserMedia({ 
-                video: { 
+                video: {
                     facingMode: "environment",
                     width: { ideal: 1280 },
                     height: { ideal: 720 }
-                } 
+                }
             }).then(function(s) {
                 stream = s;
                 video.srcObject = stream;
                 video.play();
-                scanTicket();
+                scanning = true;
+                scanFrame();
             }).catch(function(err) {
-                resultDiv.innerHTML = `<div class="invalid">Camera error: ${err.message}</div>`;
+                resultDiv.innerHTML = `<div class="invalid">Error: ${err.message}</div>`;
+                startButton.disabled = false;
             });
         }
 
-        function scanTicket() {
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        function scanFrame() {
+            if (!scanning) return;
+            
+            if (video.readyState >= video.HAVE_ENOUGH_DATA) {
                 const canvas = document.createElement("canvas");
                 canvas.width = video.videoWidth;
                 canvas.height = video.videoHeight;
@@ -86,51 +101,91 @@
                 
                 const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                    inversionAttempts: "dontInvert"
+                    inversionAttempts: "dontInvert",
+                    maxScansPerFrame: 10
                 });
                 
                 if (code) {
-                    try {
-                        const ticketData = JSON.parse(code.data);
-                        if (ticketData.ticketId && ticketData.ticketId.startsWith("AD-")) {
-                            showValidTicket(ticketData);
-                            return; // Stop scanning after successful read
-                        }
-                    } catch(e) {
-                        showInvalidTicket();
-                    }
+                    processTicket(code.data);
+                } else {
+                    requestAnimationFrame(scanFrame);
                 }
+            } else {
+                requestAnimationFrame(scanFrame);
             }
-            requestAnimationFrame(scanTicket);
         }
 
-        function showValidTicket(ticket) {
+        function processTicket(data) {
+            try {
+                // Handle both formats (JSON and pipe-delimited)
+                let ticketData;
+                if (data.startsWith("{")) {
+                    ticketData = JSON.parse(data);
+                } else if (data.startsWith("ADTICKET|")) {
+                    const parts = data.split("|");
+                    ticketData = {
+                        ticketId: parts[1],
+                        name: parts[2],
+                        type: parts[3],
+                        guests: parts[4]
+                    };
+                } else {
+                    throw new Error("Invalid ticket format");
+                }
+
+                if (ticketData.ticketId && ticketData.ticketId.startsWith("AD-")) {
+                    showResult(true, ticketData);
+                } else {
+                    throw new Error("Invalid ticket ID");
+                }
+            } catch (e) {
+                showResult(false);
+                // Continue scanning after brief delay
+                setTimeout(() => {
+                    scanning = true;
+                    scanFrame();
+                }, 2000);
+            }
+        }
+
+        function showResult(valid, ticketData) {
+            scanning = false;
             stopScanner();
-            resultDiv.innerHTML = `
-                <div class="valid">
-                    <h2>✓ VALID TICKET</h2>
-                    <p><strong>Name:</strong> ${ticket.name}</p>
-                    <p><strong>Type:</strong> ${formatTicketType(ticket.type)}</p>
-                    <p><strong>Party Size:</strong> ${ticket.guests}</p>
-                    <p><strong>Ticket ID:</strong> ${ticket.ticketId}</p>
-                    <p>Scanned at: ${new Date().toLocaleString()}</p>
-                </div>
-            `;
-        }
-
-        function showInvalidTicket() {
-            resultDiv.innerHTML = `
-                <div class="invalid">
-                    <h2>✗ INVALID TICKET</h2>
-                    <p>This QR code is not a valid AfterDark ticket</p>
-                </div>
-            `;
+            
+            if (valid) {
+                resultDiv.innerHTML = `
+                    <div class="valid">
+                        <div class="status-icon">✓</div>
+                        <h2>VALID TICKET</h2>
+                        <p><strong>Name:</strong> ${ticketData.name}</p>
+                        <p><strong>Type:</strong> ${formatTicketType(ticketData.type)}</p>
+                        <p><strong>Guests:</strong> ${ticketData.guests}</p>
+                        <p><strong>ID:</strong> ${ticketData.ticketId}</p>
+                    </div>
+                    <button id="resumeButton">Scan Another</button>
+                `;
+                document.getElementById("resumeButton").addEventListener("click", () => {
+                    resultDiv.innerHTML = "";
+                    startScanner();
+                });
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="invalid">
+                        <div class="status-icon">✗</div>
+                        <h2>INVALID TICKET</h2>
+                        <p>Please try again with a valid AfterDark ticket</p>
+                    </div>
+                    <button id="retryButton">Try Again</button>
+                `;
+                document.getElementById("retryButton").addEventListener("click", startScanner);
+            }
         }
 
         function stopScanner() {
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
             }
+            startButton.disabled = false;
         }
 
         function formatTicketType(type) {
@@ -142,7 +197,7 @@
             return types[type] || type;
         }
 
-        document.getElementById("startButton").addEventListener("click", startScanner);
+        startButton.addEventListener("click", startScanner);
     </script>
 </body>
 </html>
