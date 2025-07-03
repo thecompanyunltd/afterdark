@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <img class="logo" src="Adobe Express - file.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gay After Dark - Coming Soon</title>
+    <style>
+        :root {
+            --grindr-yellow: #fcc007;
+            --grindr-blue: #6fbddd;
+            --grindr-dark: #2d2a29;
+            --grindr-teal: #507a7c;
+            --grindr-red: #de3a3b;
+            --grindr-purple: #b793c4;
+            --grindr-navy: #485b90;
+            --grindr-pink: #aa305c;
+        }
+        
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-image: url(Untitled\ design.jpg);
+            background-size: cover;
+            color: white;
+            margin: 0;
+            padding: 0;
+            height: auto;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background-color: var(--grindr-dark);
+            background-image: url(after-dark-banner.jpg);
+            background-blend-mode:lighten;
+            background-size: contain;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--grindr-yellow);
+        }
+        
+        .header h1 {
+            color: var(--grindr-yellow);
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .header-controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .header-btn {
+            background-color: var(--grindr-blue);
+            color: black;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .header-btn:hover {
+            background-color: var(--grindr-yellow);
+        }
+        
+        .main-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 250px;
+            margin-top: 40px;
+            margin-left: 10px;
+            height: auto;
+            background-color: rgb(0, 0, 0);
+            padding: 15px;
+            overflow-y: auto;
+            border-radius: 10px;
+            margin-bottom: 200px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+        
+        .sidebar-title {
+            color: var(--grindr-yellow);
+            font-size: 16px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #000000;
+        }
+        
+        .profile-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .profile-list-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .profile-list-item:hover {
+            background-color: #333;
+        }
+        
+        .profile-name {
+            font-weight: bold;
+            color: var(--grindr-blue);
+        }
+        
+        .profile-status {
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .content-area {
+            flex: 1;
+            padding: 20px 30px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            
+        }
+        
+        .game-title {
+            color: var(--grindr-yellow);
+            margin: 0 10px 20px 0;
+            font-size: 22px;
+            background-color: black;
+            padding: 15px;
+            border-radius: 10px;
+            margin-right: auto;
+        }
+        
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+        
+        .profile-card {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--grindr-dark);
+            border-radius: 12px;
+            overflow: hidden;
+            aspect-ratio: 3 / 4;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .profile-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .profile-img {
+            height: 70%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            padding: 10px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .profile-name-card {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: white;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .profile-age {
+            font-size: 14px;
+            color: var(--grindr-blue);
+        }
+        
+        .profile-tag {
+            position: relative;
+            background-color: var(--grindr-yellow);
+            color: black;
+            padding: 3px 8px;
+            margin: 5px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--grindr-dark);
+            border-radius: 10px;
+        }
+        
+        .game-btn {
+            background-color: var(--grindr-blue);
+            color: black;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 150px;
+        }
+        
+        .game-btn:hover {
+            background-color: var(--grindr-yellow);
+            transform: translateY(-2px);
+        }
+        
+        .game-btn:disabled {
+            background-color: #444;
+            color: #777;
+            cursor: not-allowed;
+        }
+        
+        .game-results {
+            background-color: var(--grindr-dark);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            min-height: 80px;
+            border: 1px solid var(--grindr-yellow);
+        }
+        
+        .result-text {
+            color: white;
+            font-size: 18px;
+        }
+        
+        /* Popup styles */
+        .selection-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--grindr-dark);
+            border: 3px solid var(--grindr-yellow);
+            border-radius: 15px;
+            padding: 30px;
+            z-index: 1000;
+            text-align: center;
+            max-width: 80%;
+            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+        
+        .selection-title {
+            color: var(--grindr-yellow);
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 999;
+        }
+        
+        .popup-btn {
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .close-btn {
+            background-color: var(--grindr-teal);
+            color: white;
+        }
+        
+        .unk-btn {
+            padding: 10px;
+            margin-bottom: 8px;
+            background-color: #8b0000d7;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .coming-soon {
+            background-color: var(--grindr-dark);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            border: 2px solid var(--grindr-yellow);
+        }
+        
+        .coming-soon h2 {
+            color: var(--grindr-yellow);
+            margin-top: 0;
+        }
+        
+        .logo {
+            height: 200px;
+            object-fit: contain;
+            margin-right: 15px;
+        }
+
+        @media (min-width: 769px) {
+            .logo {
+                height: 200px;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            body {
+                overflow-x: hidden;
+            }
+            
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                margin: 10px 0;
+                padding: 10px;
+                order: 2;
+                margin-bottom: 20px;
+            }
+            
+            .content-area {
+                padding: 10px;
+                order: 1;
+            }
+            
+            .profile-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .profile-card {
+                aspect-ratio: 1/1.2;
+            }
+            
+            .header {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .header-controls {
+                margin-top: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .header-btn {
+                padding: 6px 12px;
+                font-size: 14px;
+                margin: 3px;
+            }
+            
+            .selection-popup {
+                width: 90%;
+                padding: 15px;
+            }
+            
+            .logo {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin: 20px auto;
+                display: block;
+            }
+            
+            .profile-name-card {
+                font-size: 14px;
+            }
+            
+            .profile-age, .profile-status {
+                font-size: 12px;
+            }
+            
+            .profile-list-item {
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-grid {
+                grid-template-rows: auto;
+            }
+            
+            .selection-popup {
+                max-width: 95%;
+                padding: 10px;
+            }
+            
+            .selection-title {
+                font-size: 20px;
+            }
+            
+            .profile-img {
+                height: 70%;
+            }
+            
+            .profile-info {
+                padding: 5px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .profile-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .profile-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="content-area">
+            <h2 class="game-title">Browse Nearby</h2>
+            <div class="coming-soon">
+                <h2>Coming Soon!</h2>
+                <p>Exciting game features will be revealed on July 25 at 19:00</p>
+                <p>Stay tuned for the big reveal!</p>
+            </div>
+            <div class="profile-grid" id="profileGrid">
+                <!-- Static profile cards -->
+                <div class="profile-card">
+                    <div class="profile-tag">Bottom, maybe keen to top</div>
+                    <img src="pics/FrancoS.jpeg" alt="Franco Stemmet" class="profile-img">
+                    <div class="profile-info">
+                        <div class="profile-name-card">Franco Stemmet, 19</div>
+                        <div class="profile-status">Group fun</div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-tag">Top</div>
+                    <img src="pics/Liam.jpg" alt="Liam" class="profile-img">
+                    <div class="profile-info">
+                        <div class="profile-name-card">Liam, 24</div>
+                        <div class="profile-status">Looking for fun</div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-tag">Bottom</div>
+                    <img src="pics/Christoff.jpg" alt="Christoff" class="profile-img">
+                    <div class="profile-info">
+                        <div class="profile-name-card">Christoff, 26</div>
+                        <div class="profile-status">Friends first</div>
+                    </div>
+                </div>
+                <div class="profile-card">
+                    <div class="profile-tag">Vers</div>
+                    <img src="pics/Christiaan.jpeg" alt="Christiaan" class="profile-img">
+                    <div class="profile-info">
+                        <div class="profile-name-card">Christiaan, 25</div>
+                        <div class="profile-status">Right now</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Nearby</h3>
+                <ul class="profile-list">
+                    <li class="profile-list-item">
+                        <div class="profile-name">G,G & G</div>
+                        <div class="profile-status">Busy at Games Night</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Who's Nearby</h3>
+                <ul class="profile-list" id="nearbyList">
+                    <li class="profile-list-item">
+                        <div class="profile-name">Something will be written here</div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="sidebar-title">Game Options</h3>
+                <ul class="profile-list">
+                    <li class="profile-list-item" id="spinBottlePart1Btn">Button 1</li>
+                    <li class="profile-list-item" id="spinBottlePart2Btn">Button 2</li>
+                    <li class="profile-list-item" id="randomPickerBtn">Button 3</li>
+                    <li class="profile-list-item" id="randomTaskBtn">Button 4</li>
+                    <li class="profile-list-item" id="revealGameBtn">Button 5</li>
+                    <li class="profile-list-item" id="resetGameBtn">Button 6</li>
+                    <li class="unk-btn" id="switchBtn">A Secret Button</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Function to show coming soon popup
+        function showComingSoonPopup() {
+            const popup = document.createElement('div');
+            popup.className = 'selection-popup';
+            popup.innerHTML = `
+                <div class="selection-title">Coming Soon!</div>
+                <div style="color: white; margin-bottom: 15px;">
+                    This feature will be revealed on July 25 at 19:00
+                </div>
+                <button class="popup-btn close-btn" id="closePopupBtn" 
+                    style="width: 100%; text-align: center;">
+                    Got it!
+                </button>
+            `;
+            
+            const overlay = document.createElement('div');
+            overlay.className = 'overlay';
+            
+            document.body.appendChild(overlay);
+            document.body.appendChild(popup);
+            
+            // Add event listener for close
+            document.getElementById('closePopupBtn').addEventListener('click', () => {
+                overlay.remove();
+                popup.remove();
+            });
+        }
+        
+        // Add event listeners to all game buttons
+        document.querySelectorAll('.profile-list-item, .unk-btn').forEach(button => {
+            button.addEventListener('click', showComingSoonPopup);
+        });
+    </script>
+</body>
+</html>
