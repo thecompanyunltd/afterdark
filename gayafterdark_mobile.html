@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+        <img class="logo" src="Adobe Express - file.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gay After Dark - Grindr Style Game</title>
@@ -128,7 +129,7 @@
         
         .content-area {
             flex: 1;
-            padding: 20px;
+            padding: 20px 30px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -146,61 +147,71 @@
         }
         
         .profile-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 5px;
-           
-        }
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 15px;
+  padding: 10px;
+}
+
         
         .profile-card {
-            background-color: var(--grindr-dark);
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
-            aspect-ratio: 1/1;
-            transition: all 0.3s;
-            box-shadow: 0 4px 3px rgba(0,0,0,0.3);
-            height: auto;
-        }
+  display: flex;
+  flex-direction: column;
+  background-color: var(--grindr-dark);
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 3 / 4; /* better for portrait content */
+  transition: transform 0.3s, box-shadow 0.3s;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.profile-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.5);
+}
+
+.profile-img {
+  height: 70%;
+  object-fit: cover;
+}
+
+.profile-info {
+  padding: 10px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.profile-name-card {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-age {
+  font-size: 14px;
+  color: var(--grindr-blue);
+}
+
         
-        .profile-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-        }
-        
-        .profile-img {
-            width: 100%;
-            height: 80%;
-            object-fit: cover
-        }
-        
-        .profile-info {
-            padding: 8px;
-            
-        }
-        
-        .profile-name-card {
-            font-weight: bold;
-            color: white;
-            margin-bottom: 0%;
-        }
-        
-        .profile-age {
-            color: var(--grindr-blue);
-            font-size: 14px;
-        }
         
         .profile-tag {
-            position: absolute;
-            top: 10px;
-            left: 10px;
+            position: relative;
             background-color: var(--grindr-yellow);
             color: black;
             padding: 3px 8px;
+            margin: 5px;
             border-radius: 10px;
             font-size: 12px;
             font-weight: bold;
         }
+
         
         .game-controls {
             display: flex;
@@ -346,18 +357,16 @@
 .profile-list-item:active, .popup-btn:active, .game-btn:active {
     transform: scale(0.98);
 }
-        .logo {
-    max-width: 150px;
-    margin: 20px auto;
-    display: block;
+.logo {
+    height: 200px;
+    object-fit: contain;
+    margin-right: 15px;
 }
 
 @media (min-width: 769px) {
     .logo {
-        position: absolute;
-        bottom: 20px;
-        left: 50px;
-        max-width: 200px;
+        height: 200px;
+        margin-bottom: 10px;
     }
 }
 
@@ -471,10 +480,7 @@
         display: block;
     }
     
-    .profile-tag {
-        font-size: 10px;
-        padding: 2px 5px;
-    }
+   
     
     .profile-name-card {
         font-size: 14px;
@@ -492,7 +498,6 @@
 
 @media (max-width: 480px) {
     .profile-grid {
-        
         grid-template-rows: auto;
     }
     
@@ -513,10 +518,35 @@
         padding: 5px;
     }
 }
+
+@media (max-width: 1024px) {
+  .profile-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 400px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fade {
+    transition: opacity 0.5s ease;
+    opacity: 0;
+}
+
+
     </style>
 </head>
 <body>
-    <img class="logo" src="Adobe Express - file.png">
+
     <div class="main-container">
         <div class="content-area">
             <h2 class="game-title">Browse Nearby</h2>
@@ -537,7 +567,7 @@
             
             <div class="sidebar-section">
                 <h3 class="sidebar-title">Who's Nearby</h3>
-                <ul class="profile-list">
+                <ul class="profile-list" id="nearbyList">
                     <li class="profile-list-item">
                         <div class="profile-name">Christoff Viewed You</div>
                     </li>
@@ -566,6 +596,7 @@
             </div>
         </div>
     </div>
+
     <script>
         // Spicy reveal functionality
 const spicyPhotos = {
@@ -576,7 +607,9 @@ const spicyPhotos = {
     5: "pics/Schalk.jpg",
     6: "pics/UliNude.jpg",
     7: "pics/PaulNude.jpg",
-    8: "pics/RobbieNude.jpg"
+    8: "pics/RobbieNude.jpg",
+    9: "pics/ShaunNude.jpg",
+    10: "pics/AINude.jpg"
 };
 
 let lastRevealTime = 0;
@@ -780,7 +813,9 @@ document.getElementById('switchBtn').addEventListener('click', function() {
         { id: 5, name: "Schalk", age: 21, img: "pics/Schalk1.jpg", tag: "Top, maybe keen to bottom", status: "DTF" },
         { id: 6, name: "Uli", age: 23, img: "pics/Uli.jpg", tag: "Bottom", status: "NSA" },
         { id: 7, name: "Paul", age: 24, img: "pics/Paul.jpg", tag: "Top, maybe keen to bottom", status: "Traveling" },
-        { id: 8, name: "Robbie", age: 20, img: "pics/Robbie.jpg", tag: "Bottom", status: "Chat first", additionalImgs: ["pics/Robbie1.jpg", "pics/Robbie3.jpg", "pics/Robbie3.jpg"] } // Add your actual image paths
+        { id: 8, name: "Robbie", age: 20, img: "pics/Robbie.jpg", tag: "Bottom", status: "Chat first", additionalImgs: ["pics/Robbie1.jpg", "pics/Robbie3.jpg", "pics/Robbie3.jpg"] }, // Add your actual image paths
+        { id: 9, name: "Shaun", age: 25, img: "pics/20250511_192558 - Shaun Herselman.jpg", tag: "Top", status: "New in Town, NSA Buds" },
+        { id: 10, name: "AI", age: 3, img: "pics/AI.jpg", tag: "Top-A.I.", status: "Riding your grades" }
     ];
 
     // Game state
@@ -1294,14 +1329,15 @@ document.getElementById('randomTaskBtn').addEventListener('click', generateRando
     }
 // Player options mapping (playerId: [option1Id, option2Id, option3Id, option4Id])
 const playerOptions = {
-    4: [7, 2, 8, 1],    // Christiaan: Paul, Liam, Robbie, Franco
-    3: [2, 6, 1, 8],    // Christoff: Liam, Uli, Franco, Robbie
-    1: [8, 2, 3, 7],    // Franco: Robbie, Liam, Christoff, Paul
-    2: [3, 8, 6, 5],    // Liam: Christoff, Robbie, Uli, Schalk
-    7: [4, 8, 6, 2],    // Paul: Christiaan, Robbie, Uli, Liam
-    8: [1, 2, 3, 6],    // Robbie: Franco, Liam, Christoff, Uli
-    5: [6, 3, 2, 1],    // Schalk: Uli, Christoff, Liam, Franco
-    6: [2, 3, 5, 7]     // Uli: Liam, Christoff, Schalk, Paul
+    1: [8, 2, 9, 3, 6],    // Franco: Robbie, Liam, Shaun, Uli, Christoff
+    2: [3, 8, 9, 5, 6],    // Liam: Christoff, Robbie, Uli, Shaun, Schalk
+    3: [5, 6, 2, 9, 8],    // Christoff: Liam, Uli, Franco, Robbie
+    4: [7, 1, 9, 2, 8],    // Christiaan: Paul, Franco, Shaun, Liam, Robbie
+    5: [3, 6, 1, 2, 7],    // Schalk: Uli, Christoff, Liam, Franco
+    6: [3, 5, 2, 9, 1],    // Uli: Liam, Christoff, Schalk, Paul
+    7: [4, 1, 3, 5, 2],    // Paul: Christiaan, Robbie, Uli, Liam
+    8: [2, 1, 3, 7, 9],    // Robbie: Franco, Liam, Christoff, Uli
+    9: [6, 2, 3, 8, 1]     // Shaun: Liam, Christoff, Schalk, Paul
 };
 
 // Reveal Game state
@@ -1508,6 +1544,73 @@ function setupPartnerSelection(selectedPlayer) {
 
 // Add event listener for the reveal game button
 document.getElementById('revealGameBtn').addEventListener('click', startRevealGame);
+
+
+//Profile neaby activity:
+    const nearbyList = document.getElementById('nearbyList');
+
+    const statusMessages = [
+        'Online',
+        'Active in Right Now',
+        'Typing...',
+        'Sent a pic',
+        'Looking 👀',
+        'Do not disturb',
+        'Idle',
+        'Browsing',
+        'Wants to play',
+        'Nearby',
+        'Busy',
+        'Last seen just now',
+        'Shared location',
+        '👀 You up?',
+    ];
+
+    const userNames = [
+        'Franco', 'Christoff', 'Schalk vir Vleis', 'Anonymous Pup', 'Daddy Shaun', 
+        'Paul not from The Bible', 'ThirstyTop', 'DomBoi', 'NewInTown', 'LiefieLiam',
+        '🐺 MaskedMan aka Robbie', 'Uli NSA', 'Frisky Franco', 'Chris vir Fris', 'New Profile'
+    ];
+
+    function getRandomItem(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generateNearbyHTML() {
+        const count = Math.floor(Math.random() * 3) + 2; // 2–4 items
+        let html = '';
+
+        for (let i = 0; i < count; i++) {
+            const name = getRandomItem(userNames);
+            const status = getRandomItem(statusMessages);
+            html += `
+                <li class="profile-list-item">
+                    <div class="profile-name">${name}</div>
+                    <div class="profile-status">${status}</div>
+                </li>`;
+        }
+
+        return html;
+    }
+
+    function updateNearbyList() {
+    nearbyList.classList.add('fade');
+    setTimeout(() => {
+        nearbyList.innerHTML = generateNearbyHTML();
+        nearbyList.classList.remove('fade');
+        scheduleNextUpdate();
+    }, 500); // Wait for fade-out before replacing content
+}
+
+
+    function scheduleNextUpdate() {
+        const nextDelay = Math.floor(Math.random() * (8 - 3 + 1) + 3) * 60 * 1000;
+        setTimeout(updateNearbyList, nextDelay);
+    }
+
+    // Initial call
+    updateNearbyList();
 </script>
+
 </body>
 </html>
