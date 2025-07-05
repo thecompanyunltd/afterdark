@@ -22,6 +22,11 @@
             padding: 20px;
             text-align: center;
         }
+        .vote-btn:disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
         .container {
             max-width: 800px;
             margin: 0 auto;
@@ -191,113 +196,141 @@
         }
 
         // Verify voter
-        async function verifyVoter() {
-            const name = voterName.value.trim();
-            const number = voterNumber.value.trim();
-            
-            const isValid = window.voterData.some(voter => 
-                voter.name === name && voter.number === number);
+// Update the verifyVoter function to always show photos but disable voting if already voted
+async function verifyVoter() {
+    const name = voterName.value.trim();
+    const number = voterNumber.value.trim();
+    
+    const isValid = window.voterData.some(voter => 
+        voter.name === name && voter.number === number);
 
-            if (isValid) {
-                verifiedVoter = { name, number };
-                authMessage.textContent = "Verification successful!";
-                authMessage.style.color = "green";
-                authSection.style.display = "none";
-                
-                if (competitionStatus.phase === 'voting') {
-                    // Check if already voted
-                    const voteSnapshot = await db.collection('votes')
-                        .where('voterNumber', '==', number)
-                        .where('week', '==', competitionStatus.currentWeek)
-                        .get();
-                    
-                    if (!voteSnapshot.empty) {
-                        competitionSection.innerHTML = `
-                            <p>You have already voted this week. Come back next week!</p>
-                        `;
-                    } else {
-                        competitionSection.style.display = "block";
-                        renderPhotos();
-                    }
-                } else if (competitionStatus.phase === 'winner') {
-                    winnerSection.style.display = "block";
+    if (isValid) {
+        verifiedVoter = { name, number };
+        authMessage.textContent = "Verification successful!";
+        authMessage.style.color = "green";
+        authSection.style.display = "none";
+        
+        // Always show the competition section
+        competitionSection.style.display = "block";
+        
+        if (competitionStatus.phase === 'voting') {
+            // Check if already voted
+            const voteSnapshot = await db.collection('votes')
+                .where('voterNumber', '==', number)
+                .where('week', '==', competitionStatus.currentWeek)
+                .get();
+            
+            renderPhotos(!voteSnapshot.empty);
+        } else if (competitionStatus.phase === 'winner') {
+            winnerSection.style.display = "block";
+        }
+    } else {
+        authMessage.textContent = "Invalid voter credentials";
+        authMessage.style.color = "red";
+    }
+}
+
+// Update renderPhotos to accept a hasVoted parameter
+function renderPhotos(hasVoted = false) {
+    photoGrid.innerHTML = '';
+    
+    // Check if voting is allowed (Sunday after 8am SAST)
+    const now = new Date();
+    const saTime = new Date(now.toLocaleString("en-US", {timeZone: "Africa/Johannesburg"}));
+    const isVotingTime = competitionStatus.phase === 'voting' && 
+                         saTime.getDay() === 0 && 
+                         saTime.getHours() >= 8;
+    
+    photos.forEach(photo => {
+        const card = document.createElement('div');
+        card.className = 'photo-card';
+        card.innerHTML = `
+            <img src="${photo.imagePath}" alt="${photo.caption}">
+            <h3>${photo.caption}</h3>
+            <button class="vote-btn" data-img="${photo.imageName}" 
+                    ${hasVoted || !isVotingTime ? 'disabled' : ''}>
+                ${hasVoted ? 'Already Voted' : 
+                  isVotingTime ? 'Vote for this' : 'Voting opens Sunday 8am SAST'}
+            </button>
+        `;
+        photoGrid.appendChild(card);
+    });
+
+    // Only add vote event listeners if voting is allowed
+    if (isVotingTime && !hasVoted) {
+        document.querySelectorAll('.vote-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const imageName = this.getAttribute('data-img');
+                castVote(imageName);
+            });
+        });
+    }
+}
+
+// Update the updateUI function to handle the voting time window
+function updateUI() {
+    const now = new Date();
+    const saTime = new Date(now.toLocaleString("en-US", {timeZone: "Africa/Johannesburg"}));
+    
+    switch (competitionStatus.phase) {
+        case 'submission':
+            statusBanner.textContent = "Submissions Open Until Saturday 23:59 SAST";
+            statusBanner.className = "status-banner submission-open";
+            competitionSection.innerHTML = `
+                <p>Submit your photos via WhatsApp to +27XX XXX XXXX. Voting opens Sunday 8am SAST!</p>
+            `;
+            break;
+            
+        case 'voting':
+            if (saTime.getDay() === 0 && saTime.getHours() >= 8) {
+                statusBanner.textContent = "Voting Open Until Sunday 15:00 SAST";
+                statusBanner.className = "status-banner voting-open";
+                if (verifiedVoter) {
+                    competitionSection.style.display = "block";
+                    renderPhotos();
                 }
             } else {
-                authMessage.textContent = "Invalid voter credentials";
-                authMessage.style.color = "red";
+                statusBanner.textContent = "Voting Will Open Sunday 8am SAST";
+                statusBanner.className = "status-banner submission-open";
+                if (verifiedVoter) {
+                    competitionSection.style.display = "block";
+                    renderPhotos();
+                }
             }
-        }
-
-        // Render photos for voting
-        function renderPhotos() {
-            photoGrid.innerHTML = '';
+            break;
             
-            photos.forEach(photo => {
-                const card = document.createElement('div');
-                card.className = 'photo-card';
-                card.innerHTML = `
-                    <img src="${photo.imagePath}" alt="${photo.caption}">
-                    <h3>${photo.caption}</h3>
-                    <button class="vote-btn" data-img="${photo.imageName}">Vote for this</button>
-                `;
-                photoGrid.appendChild(card);
-            });
+        case 'winner':
+            statusBanner.textContent = "Winner Announced! Next round starts Monday";
+            statusBanner.className = "status-banner winner-announced";
+            displayWinner();
+            break;
+    }
+}
 
-            // Add vote event listeners
-            document.querySelectorAll('.vote-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const imageName = this.getAttribute('data-img');
-                    castVote(imageName);
-                });
-            });
-        }
-
-        // Cast a vote
-        async function castVote(imageName) {
-            try {
-                await db.collection('votes').add({
-                    voterName: verifiedVoter.name,
-                    voterNumber: verifiedVoter.number,
-                    imageName: imageName,
-                    week: competitionStatus.currentWeek,
-                    timestamp: firebase.firestore.Timestamp.now()
-                });
-                
-                competitionSection.innerHTML = `
-                    <p>Thank you for voting! The winner will be announced on Sunday at 15:00 SAST.</p>
-                `;
-            } catch (error) {
-                alert("Error submitting vote: " + error.message);
-            }
-        }
-
-        // Update UI based on competition status
-        function updateUI() {
-            switch (competitionStatus.phase) {
-                case 'submission':
-                    statusBanner.textContent = "Submissions Open Until Saturday 23:59";
-                    statusBanner.className = "status-banner submission-open";
-                    competitionSection.innerHTML = `
-                        <p>Submit your photos via WhatsApp to +27XX XXX XXXX. Voting opens Sunday!</p>
-                    `;
-                    break;
-                    
-                case 'voting':
-                    statusBanner.textContent = "Voting Open Until Sunday 15:00";
-                    statusBanner.className = "status-banner voting-open";
-                    if (verifiedVoter) {
-                        competitionSection.style.display = "block";
-                        renderPhotos();
-                    }
-                    break;
-                    
-                case 'winner':
-                    statusBanner.textContent = "Winner Announced! Next round starts Monday";
-                    statusBanner.className = "status-banner winner-announced";
-                    displayWinner();
-                    break;
-            }
-        }
+// Update the castVote function to re-render photos after voting
+async function castVote(imageName) {
+    try {
+        await db.collection('votes').add({
+            voterName: verifiedVoter.name,
+            voterNumber: verifiedVoter.number,
+            imageName: imageName,
+            week: competitionStatus.currentWeek,
+            timestamp: firebase.firestore.Timestamp.now()
+        });
+        
+        // Re-render photos with voting disabled
+        renderPhotos(true);
+        
+        // Show success message
+        const message = document.createElement('p');
+        message.textContent = "Thank you for voting! You can still view all submissions.";
+        message.style.color = "var(--secondary)";
+        message.style.marginTop = "20px";
+        competitionSection.appendChild(message);
+    } catch (error) {
+        alert("Error submitting vote: " + error.message);
+    }
+}
 
         // Display winner
         async function displayWinner() {
