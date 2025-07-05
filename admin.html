@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Competition Admin</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+        .danger { background: red; color: white; }
+    </style>
+</head>
+<body>
+    <h1>Competition Admin Panel</h1>
+    
+    <div>
+        <h2>Current Status</h2>
+        <p id="currentStatus">Loading...</p>
+    </div>
+    
+    <div>
+        <h2>Actions</h2>
+        <button id="openVoting">Open Voting (Sunday 00:00)</button>
+        <button id="declareWinner" class="danger">Declare Winner (Sunday 15:00)</button>
+        <button id="resetCompetition">Reset Competition (Monday 00:00)</button>
+    </div>
+
+    <script>
+        //const db = firebase.firestore();
+        let currentStatus = {};
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStatus();
+            
+            document.getElementById('openVoting').addEventListener('click', openVoting);
+            document.getElementById('declareWinner').addEventListener('click', declareWinner);
+            document.getElementById('resetCompetition').addEventListener('click', resetCompetition);
+        });
+
+        async function loadStatus() {
+            const doc = await db.collection('competition').doc('current').get();
+            currentStatus = doc.exists ? doc.data() : {};
+            document.getElementById('currentStatus').textContent = 
+                `Phase: ${currentStatus.phase || 'unknown'}, Week: ${currentStatus.currentWeek || 'unknown'}`;
+        }
+
+        async function openVoting() {
+            await db.collection('competition').doc('current').update({
+                phase: 'voting'
+            });
+            alert("Voting is now open!");
+            loadStatus();
+        }
+
+        async function declareWinner() {
+            // Calculate winner
+            const votesSnapshot = await db.collection('votes')
+                .where('week', '==', currentStatus.currentWeek)
+                .get();
+                
+            const voteCount = {};
+            votesSnapshot.forEach(doc => {
+                const data = doc.data();
+                voteCount[data.imageName] = (voteCount[data.imageName] || 0) + 1;
+            });
+            
+            const winnerImage = Object.keys(voteCount).reduce((a, b) => 
+                voteCount[a] > voteCount[b] ? a : b);
+                
+            const winnerVote = votesSnapshot.docs.find(doc => 
+                doc.data().imageName === winnerImage);
+            
+            // Update status
+            await db.collection('competition').doc('current').update({
+                phase: 'winner',
+                winner: {
+                    imageName: winnerImage,
+                    voterName: winnerVote.data().voterName,
+                    voterNumber: winnerVote.data().voterNumber
+                }
+            });
+            
+            alert(`Winner declared: ${winnerImage}`);
+            loadStatus();
+        }
+
+        async function resetCompetition() {
+            const newWeek = getCurrentWeekNumber();
+            await db.collection('competition').doc('current').set({
+                phase: 'submission',
+                currentWeek: newWeek,
+                winner: null,
+                lastReset: firebase.firestore.Timestamp.now()
+            });
+            
+            alert(`Competition reset for week ${newWeek}`);
+            loadStatus();
+        }
+
+        function getCurrentWeekNumber() {
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), 0, 1);
+            const dayOffset = firstDay.getDay();
+            const dayNum = Math.floor((now.getTime() - firstDay.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+            return Math.ceil((dayNum + dayOffset) / 7);
+        }
+    </script>
+</body>
+</html>

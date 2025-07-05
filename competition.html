@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AfterDark Photo Competition</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        :root {
+            --primary: #e40303;
+            --secondary: #ff8c00;
+            --text: #ffffff;
+            --bg: #000000;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .auth-box {
+            background: rgba(30, 30, 30, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            max-width: 400px;
+        }
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 80%;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--secondary);
+            color: white;
+        }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .photo-card {
+            background: rgba(30, 30, 30, 0.9);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .photo-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: contain;
+        }
+        .winner-card {
+            background: rgba(255,215,0,0.1);
+            border: 2px solid gold;
+            padding: 20px;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        .status-banner {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .submission-open {
+            background: rgba(0,255,0,0.2);
+            border: 2px solid green;
+        }
+        .voting-open {
+            background: rgba(255,0,0,0.2);
+            border: 2px solid red;
+        }
+        .winner-announced {
+            background: rgba(255,215,0,0.2);
+            border: 2px solid gold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AfterDark Weekly Photo Competition</h1>
+        
+        <div id="statusBanner" class="status-banner">
+            Loading competition status...
+        </div>
+        
+        <div id="authSection" class="auth-box">
+            <h2>Voter Verification</h2>
+            <input type="text" id="voterName" placeholder="Full Name">
+            <input type="text" id="voterNumber" placeholder="Voter Number">
+            <button id="verifyBtn">Verify</button>
+            <p id="authMessage"></p>
+        </div>
+        
+        <div id="competitionSection" style="display:none;">
+            <h2>This Week's Submissions</h2>
+            <div id="photoGrid" class="photo-grid"></div>
+        </div>
+        
+        <div id="winnerSection" style="display:none;">
+            <h2>This Week's Winner</h2>
+            <div id="winnerCard" class="winner-card"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Firebase
+        //const db = firebase.firestore();
+        let verifiedVoter = null;
+        let competitionStatus = {};
+        let photos = [];
+        let votes = [];
+
+        // DOM Elements
+        const authSection = document.getElementById('authSection');
+        const competitionSection = document.getElementById('competitionSection');
+        const winnerSection = document.getElementById('winnerSection');
+        const statusBanner = document.getElementById('statusBanner');
+        const photoGrid = document.getElementById('photoGrid');
+        const winnerCard = document.getElementById('winnerCard');
+        const verifyBtn = document.getElementById('verifyBtn');
+        const voterName = document.getElementById('voterName');
+        const voterNumber = document.getElementById('voterNumber');
+        const authMessage = document.getElementById('authMessage');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            verifyBtn.addEventListener('click', verifyVoter);
+            loadCompetitionData();
+            setupAutoRefresh();
+        });
+
+        // Load competition data
+        async function loadCompetitionData() {
+            try {
+                // Load voter data
+                const voterResponse = await fetch('voterdata.txt');
+                const voterText = await voterResponse.text();
+                window.voterData = voterText.split('\n')
+                    .filter(line => line.trim())
+                    .map(line => {
+                        const [name, number] = line.split(':');
+                        return { name: name.trim(), number: number.trim() };
+                    });
+
+                // Load photo data
+                const photoResponse = await fetch('photodata.txt');
+                const photoText = await photoResponse.text();
+                photos = photoText.split('\n')
+                    .filter(line => line.trim())
+                    .map(line => {
+                        const [imageName, caption] = line.split(':');
+                        return { 
+                            imageName: imageName.trim(), 
+                            caption: caption.trim(),
+                            imagePath: `photos/${imageName.trim()}`
+                        };
+                    });
+
+                // Load competition status
+                const statusDoc = await db.collection('competition').doc('current').get();
+                competitionStatus = statusDoc.exists ? statusDoc.data() : {
+                    phase: 'submission', // submission, voting, winner
+                    currentWeek: getCurrentWeekNumber(),
+                    winner: null,
+                    lastReset: firebase.firestore.Timestamp.now()
+                };
+
+                updateUI();
+            } catch (error) {
+                console.error("Error loading data:", error);
+                statusBanner.textContent = "Error loading competition data";
+            }
+        }
+
+        // Verify voter
+        async function verifyVoter() {
+            const name = voterName.value.trim();
+            const number = voterNumber.value.trim();
+            
+            const isValid = window.voterData.some(voter => 
+                voter.name === name && voter.number === number);
+
+            if (isValid) {
+                verifiedVoter = { name, number };
+                authMessage.textContent = "Verification successful!";
+                authMessage.style.color = "green";
+                authSection.style.display = "none";
+                
+                if (competitionStatus.phase === 'voting') {
+                    // Check if already voted
+                    const voteSnapshot = await db.collection('votes')
+                        .where('voterNumber', '==', number)
+                        .where('week', '==', competitionStatus.currentWeek)
+                        .get();
+                    
+                    if (!voteSnapshot.empty) {
+                        competitionSection.innerHTML = `
+                            <p>You have already voted this week. Come back next week!</p>
+                        `;
+                    } else {
+                        competitionSection.style.display = "block";
+                        renderPhotos();
+                    }
+                } else if (competitionStatus.phase === 'winner') {
+                    winnerSection.style.display = "block";
+                }
+            } else {
+                authMessage.textContent = "Invalid voter credentials";
+                authMessage.style.color = "red";
+            }
+        }
+
+        // Render photos for voting
+        function renderPhotos() {
+            photoGrid.innerHTML = '';
+            
+            photos.forEach(photo => {
+                const card = document.createElement('div');
+                card.className = 'photo-card';
+                card.innerHTML = `
+                    <img src="${photo.imagePath}" alt="${photo.caption}">
+                    <h3>${photo.caption}</h3>
+                    <button class="vote-btn" data-img="${photo.imageName}">Vote for this</button>
+                `;
+                photoGrid.appendChild(card);
+            });
+
+            // Add vote event listeners
+            document.querySelectorAll('.vote-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const imageName = this.getAttribute('data-img');
+                    castVote(imageName);
+                });
+            });
+        }
+
+        // Cast a vote
+        async function castVote(imageName) {
+            try {
+                await db.collection('votes').add({
+                    voterName: verifiedVoter.name,
+                    voterNumber: verifiedVoter.number,
+                    imageName: imageName,
+                    week: competitionStatus.currentWeek,
+                    timestamp: firebase.firestore.Timestamp.now()
+                });
+                
+                competitionSection.innerHTML = `
+                    <p>Thank you for voting! The winner will be announced on Sunday at 15:00 SAST.</p>
+                `;
+            } catch (error) {
+                alert("Error submitting vote: " + error.message);
+            }
+        }
+
+        // Update UI based on competition status
+        function updateUI() {
+            switch (competitionStatus.phase) {
+                case 'submission':
+                    statusBanner.textContent = "Submissions Open Until Saturday 23:59";
+                    statusBanner.className = "status-banner submission-open";
+                    competitionSection.innerHTML = `
+                        <p>Submit your photos via WhatsApp to +27XX XXX XXXX. Voting opens Sunday!</p>
+                    `;
+                    break;
+                    
+                case 'voting':
+                    statusBanner.textContent = "Voting Open Until Sunday 15:00";
+                    statusBanner.className = "status-banner voting-open";
+                    if (verifiedVoter) {
+                        competitionSection.style.display = "block";
+                        renderPhotos();
+                    }
+                    break;
+                    
+                case 'winner':
+                    statusBanner.textContent = "Winner Announced! Next round starts Monday";
+                    statusBanner.className = "status-banner winner-announced";
+                    displayWinner();
+                    break;
+            }
+        }
+
+        // Display winner
+        async function displayWinner() {
+            if (competitionStatus.winner) {
+                const winnerPhoto = photos.find(p => 
+                    p.imageName === competitionStatus.winner.imageName);
+                
+                winnerCard.innerHTML = `
+                    <img src="${winnerPhoto.imagePath}" style="max-width:100%;">
+                    <h3>${winnerPhoto.caption}</h3>
+                    <p>Voted by ${competitionStatus.winner.voterName}</p>
+                `;
+                winnerSection.style.display = "block";
+            }
+        }
+
+        // Helper functions
+        function getCurrentWeekNumber() {
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), 0, 1);
+            const dayOffset = firstDay.getDay();
+            const dayNum = Math.floor((now.getTime() - firstDay.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+            return Math.ceil((dayNum + dayOffset) / 7);
+        }
+
+        function setupAutoRefresh() {
+            // Refresh every minute to check for status changes
+            setInterval(loadCompetitionData, 60000);
+        }
+    </script>
+</body>
+</html>
