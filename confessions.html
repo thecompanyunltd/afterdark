@@ -414,12 +414,6 @@
         setLines();
       }
 
-      function onMouseMove(e) { updateMouse(e.clientX, e.clientY); }
-      function onTouchMove(e) {
-        e.preventDefault();
-        const touch = e.touches[0];
-        updateMouse(touch.clientX, touch.clientY);
-      }
 
       function updateMouse(x, y) {
         mouse.x = x - bounding.left;
@@ -436,8 +430,7 @@
       setLines();
       frameId = requestAnimationFrame(tick);
       window.addEventListener("resize", onResize);
-      window.addEventListener("mousemove", onMouseMove);
-      window.addEventListener("touchmove", onTouchMove, { passive: false });
+
     });
 
         // Better touch handling for mobile
