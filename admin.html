@@ -53,37 +53,73 @@
             loadStatus();
         }
 
-        async function declareWinner() {
-            // Calculate winner
-            const votesSnapshot = await db.collection('votes')
-                .where('week', '==', currentStatus.currentWeek)
-                .get();
-                
-            const voteCount = {};
-            votesSnapshot.forEach(doc => {
-                const data = doc.data();
-                voteCount[data.imageName] = (voteCount[data.imageName] || 0) + 1;
+async function declareWinner() {
+    try {
+        // 1. Get all votes for current week
+        const votesSnapshot = await db.collection('votes')
+            .where('week', '==', currentStatus.currentWeek)
+            .get();
+        
+        if (votesSnapshot.empty) {
+            await db.collection('competition').doc('current').update({
+                phase: 'winner',
+                winner: null
             });
-            
-            const winnerImage = Object.keys(voteCount).reduce((a, b) => 
-                voteCount[a] > voteCount[b] ? a : b);
-                
+            alert("No votes were cast this week!");
+            loadStatus();
+            return;
+        }
+
+        // 2. Count votes per photo
+        const voteCount = {};
+        votesSnapshot.forEach(doc => {
+            const data = doc.data();
+            voteCount[data.imageName] = (voteCount[data.imageName] || 0) + 1;
+        });
+
+        // 3. Find maximum vote count
+        const maxVotes = Math.max(...Object.values(voteCount));
+        
+        // 4. Check for ties (multiple photos with max votes)
+        const winningPhotos = Object.keys(voteCount).filter(
+            img => voteCount[img] === maxVotes
+        );
+
+        if (winningPhotos.length > 1) {
+            // TIE CASE
+            await db.collection('competition').doc('current').update({
+                phase: 'winner',
+                winner: {
+                    isTie: true,
+                    tiedImages: winningPhotos,
+                    voteCount: maxVotes
+                }
+            });
+            alert(`Tie detected between ${winningPhotos.length} photos with ${maxVotes} votes each! No winner declared.`);
+        } else {
+            // NORMAL WINNER CASE
+            const winnerImage = winningPhotos[0];
             const winnerVote = votesSnapshot.docs.find(doc => 
                 doc.data().imageName === winnerImage);
             
-            // Update status
             await db.collection('competition').doc('current').update({
                 phase: 'winner',
                 winner: {
                     imageName: winnerImage,
                     voterName: winnerVote.data().voterName,
-                    voterNumber: winnerVote.data().voterNumber
+                    voteCount: maxVotes,
+                    isTie: false
                 }
             });
-            
-            alert(`Winner declared: ${winnerImage}`);
-            loadStatus();
+            alert(`Winner declared: ${winnerImage} with ${maxVotes} votes!`);
         }
+        
+        loadStatus();
+    } catch (error) {
+        console.error("Error declaring winner:", error);
+        alert("Error declaring winner: " + error.message);
+    }
+}
 
         async function resetCompetition() {
             const newWeek = getCurrentWeekNumber();

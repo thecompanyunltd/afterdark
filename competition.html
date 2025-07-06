@@ -283,7 +283,7 @@ function updateUI() {
             
         case 'voting':
             if (saTime.getDay() === 0 && saTime.getHours() >= 8) {
-                statusBanner.textContent = "Voting Open Until Sunday 17:00 SAST";
+                statusBanner.textContent = "Voting Open Until Sunday 16:00 SAST";
                 statusBanner.className = "status-banner voting-open";
                 if (verifiedVoter) {
                     competitionSection.style.display = "block";
@@ -333,19 +333,52 @@ async function castVote(imageName) {
 }
 
         // Display winner
-        async function displayWinner() {
-            if (competitionStatus.winner) {
-                const winnerPhoto = photos.find(p => 
-                    p.imageName === competitionStatus.winner.imageName);
-                
-                winnerCard.innerHTML = `
-                    <img src="${winnerPhoto.imagePath}" style="max-width:100%;">
-                    <h3>${winnerPhoto.caption}</h3>
-                    <p>Voted by ${competitionStatus.winner.voterName}</p>
-                `;
-                winnerSection.style.display = "block";
-            }
-        }
+async function displayWinner() {
+    if (!competitionStatus.winner) {
+        winnerCard.innerHTML = `
+            <p>No winner this week - no votes were cast!</p>
+        `;
+        winnerSection.style.display = "block";
+        return;
+    }
+
+    if (competitionStatus.winner.isTie) {
+        // Display tie message
+        winnerCard.innerHTML = `
+            <h3>🏆 It's a Tie! 🏆</h3>
+            <p>${competitionStatus.winner.tiedImages.length} photos tied with 
+            ${competitionStatus.winner.voteCount} votes each</p>
+            
+            <div class="tied-photos">
+                ${competitionStatus.winner.tiedImages.map(img => {
+                    const photo = photos.find(p => p.imageName === img);
+                    return `
+                        <div class="tied-photo">
+                            <img src="${photo.imagePath}" alt="${photo.caption}">
+                            <p>${photo.caption}</p>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+            
+            <p>No official winner declared this week</p>
+        `;
+    } else {
+        // Display normal winner
+        const winnerPhoto = photos.find(p => 
+            p.imageName === competitionStatus.winner.imageName);
+        
+        winnerCard.innerHTML = `
+            <h3>🏆 Winner 🏆</h3>
+            <img src="${winnerPhoto.imagePath}" style="max-width:100%;">
+            <h4>${winnerPhoto.caption}</h4>
+            <p>Received ${competitionStatus.winner.voteCount} votes</p>
+            <p>Voted by ${competitionStatus.winner.voterName}</p>
+        `;
+    }
+    
+    winnerSection.style.display = "block";
+}
 
         // Helper functions
         function getCurrentWeekNumber() {
