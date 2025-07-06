@@ -277,13 +277,13 @@ function updateUI() {
             statusBanner.textContent = "Submissions Open Until Saturday 23:59 SAST";
             statusBanner.className = "status-banner submission-open";
             competitionSection.innerHTML = `
-                <p>Submit your photos via WhatsApp to +27XX XXX XXXX. Voting opens Sunday 8am SAST!</p>
+                <p>Submit your photos via https://forms.gle/84feJukibLV4g7FRA. Voting opens Sunday 8am SAST!</p>
             `;
             break;
             
         case 'voting':
             if (saTime.getDay() === 0 && saTime.getHours() >= 8) {
-                statusBanner.textContent = "Voting Open Until Sunday 15:00 SAST";
+                statusBanner.textContent = "Voting Open Until Sunday 17:00 SAST";
                 statusBanner.className = "status-banner voting-open";
                 if (verifiedVoter) {
                     competitionSection.style.display = "block";
