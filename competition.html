@@ -96,6 +96,24 @@
             background: rgba(255,215,0,0.2);
             border: 2px solid gold;
         }
+        .tied-photos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.tied-photo {
+    background: rgba(255,255,255,0.1);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.tied-photo img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+}
     </style>
 </head>
 <body>
@@ -331,6 +349,7 @@ async function castVote(imageName) {
         alert("Error submitting vote: " + error.message);
     }
 }
+
 
         // Display winner
 async function displayWinner() {
