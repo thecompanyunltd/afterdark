@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <iframe src="wave-background.html"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: -1; pointer-events: none;"
+        scrolling="no"></iframe>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anonymous Submission Portal</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <style>
+
+            :root {
+            --primary: #FF5F6D;
+            --secondary: #FFC371;
+            --accent: #12D8FA;
+            --dark: #1A1A2E;
+            --darker: #16213E;
+            --light: #E6F9FF;
+            --grindr-yellow: #fcc007;
+            --grindr-blue: #6fbddd;
+            --grindr-dark: #2d2a29;
+        }
+    
+    body {
+      font-family: 'Cascadia Code', monospace;
+      background-color: #000;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      /* Enable scrolling */
+    }
+
+    .card {
+      background-color: var(--grindr-dark);
+      border: 1px solid #fcc007;
+      border-radius: 10px;
+      padding: 30px;
+      max-width: 600px;
+      margin: auto;
+    }
+    h2 {
+      font-family: 'Baskerville Old Style', serif;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #6fbddd;
+    }
+    label {
+      margin-top: 1rem;
+      font-weight: bold;
+      display: block;
+    }
+    select, input, textarea, button {
+      display: block;
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.6rem;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background-color: #111;
+      color: white;
+    }
+    textarea { height: 100px; }
+    button {
+      margin-top: 1.5rem;
+      background-color: #5E17EB;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .required::after {
+      content: " *";
+      color: #FF914D;
+    }
+    .description {
+      font-size: 0.9rem;
+      color: #aaa;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+      <header>
+    <img src="Adobe Express - file.png" alt="Gay After Dark Logo" />
+  </header>
+
+  <div class="card">
+    <h2>Anonymous Message Submission Competition</h2>
+
+    <div id="auth-section">
+      <label class="required" for="username">Your Name</label>
+      <div class="description">Select your name from the list to verify your identity - this is for the competition only.</div>
+      <select id="username" required>
+        <option value="">Select your name</option>
+        <option value="Franco">Franco</option>
+        <option value="Schalk">Schalk</option>
+        <option value="Christiaan">Christiaan</option>
+        <option value="Christoff">Christoff</option>
+        <option value="Shaun">Shaun</option>
+        <option value="Robbie">Robbie</option>
+        <option value="Liam">Liam</option>
+        <option value="Paul">Paul</option>
+        <option value="Uli">Uli</option>
+      </select>
+
+      <label class="required" for="last4">Phone Number Verification</label>
+      <div class="description">Enter the last 4 digits of your phone number for identity confirmation.</div>
+      <input id="last4" maxlength="4" placeholder="e.g. 0000" type="text" required />
+
+      <label class="required" for="orientation">Survey Match</label>
+      <div class="description">Select the response you originally gave in the orientation survey.</div>
+      <select id="orientation" required>
+        <option value="">Select your answer</option>
+        <option>Top only</option>
+        <option>Top, maybe keen to bottom</option>
+        <option>Top and never bottomed before but keen to try</option>
+        <option>Vers, no preferences</option>
+        <option>Verse prefer to top</option>
+        <option>Verse prefer to bottom</option>
+        <option>Bottom only</option>
+        <option>Bottom maybe keen to top</option>
+        <option>Bottom and never topped before but keen to try</option>
+      </select>
+
+      <button onclick="verifyUser()">Verify & Continue</button>
+    </div>
+
+<div id="message-section" style="display:none;">
+  <label class="required" for="recipient">Message Recipient</label>
+  <div class="description">Choose the person you’d like to leave an anonymous message for.</div>
+  <select id="recipient" required>
+    <option value="">Select a recipient</option>
+    <option value="Franco">Franco</option>
+    <option value="Schalk">Schalk</option>
+    <option value="Christiaan">Christiaan</option>
+    <option value="Christoff">Christoff</option>
+    <option value="Shaun">Shaun</option>
+    <option value="Robbie">Robbie</option>
+    <option value="Liam">Liam</option>
+    <option value="Paul">Paul</option>
+    <option value="Uli">Uli</option>
+  </select>
+
+  <label class="required" for="message">Your Message</label>
+  <div class="description">Write an anonymous message. It must be longer than two words.</div>
+  <textarea id="message" placeholder="Type your message..." required></textarea>
+
+  <label for="reveal">
+    <input type="checkbox" id="reveal" />
+    I would like the recipient to know who this message is from
+  </label>
+
+  <button onclick="submitMessage()">Submit Message</button>
+</div>
+
+  </div>
+
+  <script>
+    const users = {
+      Franco:  { phone: "0765132449", orientation: "Bottom maybe keen to top" },
+      Schalk:  { phone: "0795740981", orientation: "Top, maybe keen to bottom" },
+      Christiaan: { phone: "0828978225", orientation: "Vers, no preferences" },
+      Christoff: { phone: "0799148447", orientation: "Bottom only" },
+      Shaun:   { phone: "0827772431", orientation: "Top only" },
+      Robbie:  { phone: "0628672845", orientation: "Bottom only" },
+      Liam:    { phone: "0798742015", orientation: "Top only" },
+      Paul:    { phone: "0785041283", orientation: "Top, maybe keen to bottom" },
+      Uli:     { phone: "0797999154", orientation: "Bottom only" },
+    };
+
+    let currentUser = "";
+
+    function verifyUser() {
+      const name = document.getElementById("username").value;
+      const last4 = document.getElementById("last4").value.trim();
+      const orientation = document.getElementById("orientation").value.trim();
+
+      if (!users[name]) return alert("User not recognized.");
+      if (last4 !== users[name].phone.slice(-4)) return alert("Incorrect phone number digits.");
+      if (orientation !== users[name].orientation) return alert("Survey answer does not match.");
+
+      currentUser = name;
+      document.getElementById("auth-section").style.display = "none";
+      document.getElementById("message-section").style.display = "block";
+    }
+
+async function submitMessage() {
+  const recipient = document.getElementById("recipient").value;
+  const text = document.getElementById("message").value.trim();
+  const revealIdentity = document.getElementById("reveal").checked;
+
+  if (!recipient || !text || text.split(" ").length < 3) {
+    alert("Message must be more than two words.");
+    return;
+  }
+
+  const timestamp = new Date();
+  const deadline = new Date("2025-07-17T08:00:00Z");
+
+  await db.collection("messages").add({
+    from: currentUser,
+    to: recipient,
+    text,
+    revealIdentity,
+    timestamp
+  });
+
+  const ref = db.collection("entries").doc(currentUser);
+  const doc = await ref.get();
+  let total = 1;
+  let entries = 0;
+
+  if (doc.exists) {
+    const data = doc.data();
+    total = (data.total || 0) + 1;
+    entries = total > 2 ? Math.min(total, 10) : 0;
+  }
+
+  await ref.set({ total, entries });
+
+  alert(`Message submitted. You now have ${entries} valid entries.`);
+  document.getElementById("message").value = "";
+  document.getElementById("reveal").checked = false;
+}
+  </script>
+</body>
+</html>
