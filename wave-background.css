@@ -1,0 +1,24 @@
+:root {
+  --grindr-yellow: #fcc007;
+  --grindr-blue: #6fbddd;
+  --grindr-dark: #2d2a29;
+  --grindr-teal: #507a7c;
+  --grindr-red: #de3a3b;
+  --grindr-purple: #b793c4;
+  --grindr-navy: #485b90;
+  --grindr-pink: #aa305c;
+}
+
+.waves-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.waves-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
