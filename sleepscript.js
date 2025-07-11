@@ -1,6 +1,5 @@
 // Assumes firebase is already initialized in firebase-config.js
-
-const database = firebase.database();
+// and `const db = firebase.firestore();` is declared there
 
 document.getElementById('sleepoverForm').addEventListener('submit', function (e) {
   e.preventDefault();
@@ -14,16 +13,17 @@ document.getElementById('sleepoverForm').addEventListener('submit', function (e)
     return;
   }
 
-  const submissionRef = database.ref('sleepoverRequests').push();
-  submissionRef.set({
-    name,
-    reason,
-    external,
-    timestamp: new Date().toISOString()
-  }).then(() => {
+  db.collection("sleepoverRequests").add({
+    name: name,
+    reason: reason,
+    external: external,
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  })
+  .then(() => {
     document.getElementById('confirmationMsg').textContent = "Your request has been submitted. Thank you!";
     document.getElementById('sleepoverForm').reset();
-  }).catch((error) => {
+  })
+  .catch((error) => {
     console.error("Error submitting request: ", error);
     alert("There was an error. Please try again later.");
   });
