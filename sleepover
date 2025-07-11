@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Party Sleepover Request</title>
+  <link rel="stylesheet" href="stylesleep.css" />
+</head>
+<body>
+  <div class="form-container">
+    <h1>Sleepover Request Form</h1>
+    <p class="disclaimer">
+      Due to a change in building management and newly enforced rules, we can now only accommodate 
+      <strong>2 to 3 people for sleepovers</strong>. Space is extremely limited. If you truly feel 
+      you deserve to stay over after the party, please fill this in honestly.
+    </p>
+
+    <form id="sleepoverForm">
+      <label for="name">Your Full Name</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="reason">Why do you want to sleep over?</label>
+      <textarea id="reason" name="reason" required placeholder="Be brutally honest and clear..."></textarea>
+
+      <label for="external">Do you have any external motivations or reasons (Yes/No)?</label>
+      <select id="external" name="external" required>
+        <option value="">-- Select --</option>
+        <option value="Yes">Yes</option>
+        <option value="No">No</option>
+      </select>
+
+      <button type="submit">Submit Request</button>
+    </form>
+
+    <p class="confirmation" id="confirmationMsg"></p>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="jssleep.js"></script>
+</body>
+</html>
