@@ -3,16 +3,100 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Party Sleepover Request</title>
-  <link rel="stylesheet" href="sleepstyle.css" />
+  <title>Sleepover Request – Party Edition</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at top, #1a1a1a, #000);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .form-container {
+      background-color: #111;
+      border: 2px solid #4b0082;
+      border-radius: 16px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 0 0 20px #9400d3;
+    }
+
+    h1 {
+      color: #fff;
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 10px #ff00ff;
+    }
+
+    .disclaimer {
+      font-size: 0.95rem;
+      color: #ccc;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: #ddd;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 0.75rem;
+      border: none;
+      border-radius: 8px;
+      background: #222;
+      color: #fff;
+      font-size: 1rem;
+      box-shadow: 0 0 10px #4b0082;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    button {
+      margin-top: 2rem;
+      background: #9400d3;
+      color: #fff;
+      border: none;
+      padding: 1rem;
+      width: 100%;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #ff00ff;
+    }
+
+    .confirmation {
+      margin-top: 1.5rem;
+      text-align: center;
+      color: #00ffcc;
+    }
+  </style>
 </head>
 <body>
   <div class="form-container">
     <h1>Sleepover Request Form</h1>
     <p class="disclaimer">
-      Due to a change in building management and newly enforced rules, we can now only accommodate 
-      <strong>2 to 3 people for sleepovers</strong>. Space is extremely limited. If you truly feel 
-      you deserve to stay over after the party, please fill this in honestly.
+      Due to a recent change in building management and newly enforced rules, we can now only accommodate 
+      <strong>2 to 3 people for sleepovers</strong>. Space is extremely limited.<br><br>
+      If you truly believe you deserve to stay over after the party, fill in this form with <strong>brutal honesty</strong>.
     </p>
 
     <form id="sleepoverForm">
@@ -35,10 +119,54 @@
     <p class="confirmation" id="confirmationMsg"></p>
   </div>
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-  <script src="firebase-config.js"></script>
-  <script src="sleepscript.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <!-- Firebase Config and JS Logic -->
+  <script>
+    // Replace with your actual Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyAUDoAdsxET7YN6uCtVpibRe8WiWMOEgKM",
+      authDomain: "gayafterdark-7756c.firebaseapp.com",
+      projectId: "gayafterdark-7756c",
+      storageBucket: "gayafterdark-7756c.firebasestorage.app",
+      messagingSenderId: "786967220854",
+      appId: "1:786967220854:web:90eef1d553a26dcb2e8557",
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Form submission logic
+    document.getElementById('sleepoverForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const reason = document.getElementById('reason').value.trim();
+      const external = document.getElementById('external').value;
+
+      if (!name || !reason || !external) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      db.collection("sleepoverRequests").add({
+        name,
+        reason,
+        external,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      })
+      .then(() => {
+        document.getElementById('confirmationMsg').textContent = "Your request has been submitted. Thank you!";
+        document.getElementById('sleepoverForm').reset();
+      })
+      .catch((error) => {
+        console.error("Error submitting request: ", error);
+        alert("There was an error. Please try again later.");
+      });
+    });
+  </script>
 </body>
 </html>
