@@ -369,9 +369,70 @@
   color: var(--tertiary);
   font-style: italic;
 }
+
+ /* Add this new style for the popup overlay */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .popup-content {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            text-align: center;
+            border: 2px solid var(--primary);
+            box-shadow: 0 0 30px rgba(228, 3, 3, 0.5);
+        }
+        
+        .popup-title {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .popup-message {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .popup-close {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-close:hover {
+            background: #c00000;
+        }
 </style>
 </head>
 <body>
+<div class="popup-overlay" id="rsvpClosedPopup">
+        <div class="popup-content">
+            <h2 class="popup-title">RSVPs Are Closed</h2>
+            <p class="popup-message">
+                Thank you for your interest! We're no longer accepting RSVPs for this event.<br><br>
+                The guest list has been finalized and we've reached our capacity.
+            </p>
+            <button class="popup-close" id="closePopupBtn">Close</button>
+        </div>
+    </div>
     <div class="waves-container">
     <canvas class="waves-canvas"></canvas>
   </div>
@@ -495,6 +556,44 @@
             <p style="text-align: center; margin-top: 15px;"><a href="noticeboard.html" style="color: var(--tertiary);">View Full Notice Board</a></p>
         </div>
     </div>
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show the RSVP closed popup
+            const popup = document.getElementById('rsvpClosedPopup');
+            popup.style.display = 'flex';
+            
+            // Close button functionality
+            document.getElementById('closePopupBtn').addEventListener('click', function() {
+                popup.style.display = 'none';
+            });
+            
+            // Disable all form inputs and buttons
+            const formInputs = document.querySelectorAll('input, select, textarea, button');
+            formInputs.forEach(element => {
+                element.disabled = true;
+            });
+            
+            // Hide the submit button
+            const submitBtn = document.getElementById('checkinBtn');
+            if (submitBtn) {
+                submitBtn.style.display = 'none';
+            }
+            
+            // Add a message to the form
+            const form = document.getElementById('rsvpForm');
+            if (form) {
+                const closedMessage = document.createElement('div');
+                closedMessage.innerHTML = `
+                    <div style="text-align: center; padding: 20px; background: rgba(228, 3, 3, 0.2); border-radius: 8px; margin-bottom: 20px;">
+                        <h3 style="color: var(--primary); margin-bottom: 10px;">RSVPs Are Closed</h3>
+                        <p>We're no longer accepting reservations for this event.</p>
+                    </div>
+                `;
+                form.insertBefore(closedMessage, form.firstChild);
+            }
+        });
+    </script>
+
     <script>
   document.addEventListener('DOMContentLoaded', function () {
     const checkbox = document.getElementById("acceptCheckbox");
