@@ -502,17 +502,33 @@
       });
       
       // Handle mobile keyboard appearance
-      const inputs = [nameInput, messageInput];
-      inputs.forEach(input => {
-        input.addEventListener('focus', function() {
-          setTimeout(() => {
-            window.scrollTo({
-              top: this.offsetTop - 60,
-              behavior: 'smooth'
-            });
-          }, 300);
-        });
-      });
+// Replace the existing input focus handlers with this:
+const inputs = [nameInput, messageInput];
+inputs.forEach(input => {
+  input.addEventListener('focus', function() {
+    // Only scroll if we're on mobile (small screen)
+    if (window.innerWidth <= 768) {
+      setTimeout(() => {
+        // Calculate if the input is currently visible
+        const inputRect = this.getBoundingClientRect();
+        const isVisible = (
+          inputRect.top >= 0 &&
+          inputRect.left >= 0 &&
+          inputRect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+          inputRect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+        
+        // Only scroll if the input isn't already visible
+        if (!isVisible) {
+          window.scrollTo({
+            top: this.offsetTop - 60,
+            behavior: 'smooth'
+          });
+        }
+      }, 300);
+    }
+  });
+});
 
       // Initial load
       loadMessages();
