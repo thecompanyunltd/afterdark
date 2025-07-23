@@ -2,23 +2,31 @@
 <html lang="en">
 <head>
   <!-- Waves Animation -->
-     <iframe src="wave-background.html"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: -1; pointer-events: none;"
-        scrolling="no"></iframe>
+  <iframe src="wave-background.html"
+    style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: -1; pointer-events: none;"
+    scrolling="no"></iframe>
   <meta charset="UTF-8" />
-  <!-- Updated viewport meta tag to allow zooming -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
+  <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700&family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
   <title>Gay After Dark Confessions</title>
   <style>
     /* Base styles */
     :root {
       --mobile-padding: 1rem;
+      --rainbow-gradient: linear-gradient(45deg, 
+        #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
+      --rainbow-gradient-horizontal: linear-gradient(90deg, 
+        #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
+      --accent-color: #fcc007;
+      --dark-bg: #121212;
+      --darker-bg: #0a0a0a;
+      --card-bg: #1e1e1e;
     }
     
     body {
       margin: 0;
-      font-family: 'Cascadia Code', monospace;
-      background-color: #000;
+      font-family: 'Rubik', sans-serif;
+      background-color: var(--dark-bg);
       color: white;
       display: flex;
       flex-direction: column;
@@ -26,10 +34,41 @@
       position: relative;
       min-height: 100vh;
       -webkit-text-size-adjust: 100%;
-      /* Enable scrolling */
       overflow-x: hidden;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
+      line-height: 1.6;
+    }
+
+    /* Modern gaming container styles */
+    .game-container {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid rgba(252, 192, 7, 0.3);
+      margin: 1rem auto;
+      max-width: 800px;
+      width: calc(100% - 2rem);
+      box-sizing: border-box;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .game-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .game-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--rainbow-gradient);
     }
 
     header img {
@@ -37,115 +76,293 @@
       max-width: 1000px;
       height: auto;
       display: block;
-      margin-top: 1rem;
+      margin: 2rem auto 1rem;
       padding: 0 var(--mobile-padding);
       box-sizing: border-box;
+      filter: drop-shadow(0 0 20px rgba(255,255,255,0.2));
     }
 
-    .content-box, .content-box-buttons {
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: var(--mobile-padding);
-      border-radius: 15px;
-      margin: 1rem auto;
-      max-width: 800px;
-      width: calc(100% - 2rem);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(5px);
-      box-sizing: border-box;
+    h1, h2, h3 {
+      font-family: 'Oxanium', sans-serif;
+      font-weight: 700;
+      margin-top: 0;
     }
 
     h1 {
-      font-family: 'Baskerville Old Style', serif;
-      font-size: clamp(1.5rem, 5vw, 2.5rem);
-      margin-top: 0;
-      color: #fff;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      background: var(--rainbow-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: var(--rainbow-gradient);
+      border-radius: 3px;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      color: white;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      color: var(--accent-color);
+      margin-bottom: 0.8rem;
     }
 
     p {
       margin: 1rem 0;
-      line-height: 1.6;
-      font-size: clamp(0.9rem, 3vw, 1.1rem);
+      font-size: clamp(0.95rem, 3vw, 1.1rem);
+      color: rgba(255,255,255,0.9);
     }
 
-    footer {
-      margin: 1rem auto;
-      font-size: 0.8rem;
-      color: #aaa;
-      background-color: rgba(0, 0, 0, 0.7);
-      padding: 0.8rem;
-      border-radius: 10px;
-      width: calc(100% - 2rem);
-      text-align: center;
-      box-sizing: border-box;
-    }
-
-    /* Button styles */
+    /* Modern gaming button styles */
     button {
-      padding: 1rem;
+      position: relative;
+      padding: 1rem 1.5rem;
       border-radius: 8px;
       border: none;
-      background: linear-gradient(45deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
+      background: var(--darker-bg);
       color: white;
-      font-weight: bold;
+      font-family: 'Oxanium', sans-serif;
+      font-weight: 600;
       font-size: 1rem;
       cursor: pointer;
       margin: 0.5rem 0;
       width: 100%;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: all 0.3s ease;
       -webkit-tap-highlight-color: transparent;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border: 1px solid rgba(252, 192, 7, 0.3);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--rainbow-gradient);
+      opacity: 0.2;
+      transition: left 0.4s ease;
     }
 
     button:hover, button:focus {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     }
 
-    /* Mobile menu buttons */
+    button:hover::before {
+      left: 0;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Button container */
     .button-container {
       display: flex;
       flex-direction: column;
       width: 100%;
-      gap: 0.5rem;
+      gap: 0.8rem;
     }
 
     /* Mobile menu toggle */
     .menu-toggle {
       display: none;
-      background: linear-gradient(45deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
+      background: var(--darker-bg);
       color: white;
-      border: none;
+      border: 1px solid rgba(252, 192, 7, 0.3);
       padding: 1rem;
       border-radius: 8px;
-      font-weight: bold;
+      font-family: 'Oxanium', sans-serif;
+      font-weight: 600;
       margin: 0.5rem auto;
       width: calc(100% - 2rem);
       max-width: 800px;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
+      text-transform: uppercase;
+      font-size: 1rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .menu-toggle:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Countdown styles */
+    .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+
+    .countdown-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--darker-bg);
+      border-radius: 10px;
+      padding: 1.2rem;
+      min-width: 80px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      border: 1px solid rgba(252, 192, 7, 0.2);
+    }
+
+    .countdown-number {
+      font-size: 2.2rem;
+      font-weight: 700;
+      font-family: 'Oxanium', sans-serif;
+      background: var(--rainbow-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .countdown-label {
+      font-size: 0.8rem;
+      color: var(--accent-color);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'Oxanium', sans-serif;
+      margin-top: 0.5rem;
+    }
+
+    /* Features section */
+    .features-section {
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: var(--card-bg);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(252, 192, 7, 0.2);
+    }
+
+    .features-section h2 {
+      position: relative;
+      padding-bottom: 1rem;
+    }
+
+    .features-section h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 3px;
+      background: var(--rainbow-gradient-horizontal);
+      border-radius: 3px;
+    }
+
+    .feature-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      justify-content: center;
+    }
+
+    .feature-card {
+      background: var(--darker-bg);
+      border-radius: 12px;
+      padding: 1.5rem;
+      flex: 1 1 300px;
+      max-width: 420px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      border: 1px solid rgba(252, 192, 7, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--rainbow-gradient);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+      border-color: rgba(252, 192, 7, 0.3);
+    }
+
+    .feature-card h3 {
+      font-size: 1.2rem;
+      margin-top: 0;
+      margin-bottom: 0.8rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    .feature-card h3::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 40px;
+      height: 2px;
+      background: var(--accent-color);
+    }
+
+    .feature-card p {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* Glow effects */
+    .glow {
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 5px rgba(252, 192, 7, 0.5);
+      }
+      to {
+        box-shadow: 0 0 20px rgba(252, 192, 7, 0.8);
+      }
     }
 
     /* Mobile-specific adjustments */
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       header img {
-        margin-top: 0.5rem;
+        margin: 1rem auto;
       }
       
-      .content-box, .content-box-buttons {
-        padding: 1rem;
-        margin: 0.5rem auto;
+      .game-container {
         width: calc(100% - 1rem);
+        margin: 0.8rem auto;
       }
       
-      p {
-        margin: 0.8rem 0;
-      }
-      
-      /* Chat widget adjustment */
-      #chtl-script {
-        bottom: 80px !important;
-      }
-
       /* Mobile menu styles */
       .menu-toggle {
         display: block;
@@ -165,52 +382,68 @@
         from { opacity: 0; transform: translateY(-10px); }
         to { opacity: 1; transform: translateY(0); }
       }
+
+      .countdown {
+        gap: 1rem;
+      }
+
+      .countdown-item {
+        min-width: 70px;
+        padding: 1rem;
+      }
+
+      .countdown-number {
+        font-size: 1.8rem;
+      }
+
+      .features-section {
+        padding: 1.2rem;
+      }
+
+      .feature-card {
+        flex: 1 1 100%;
+      }
     }
 
-    /* Very small devices */
-    @media (max-width: 400px) {
+    /* Small devices */
+    @media (max-width: 480px) {
       :root {
         --mobile-padding: 0.8rem;
       }
       
       h1 {
-        font-size: 1.3rem;
+        font-size: 1.6rem;
       }
       
-      button {
-        padding: 0.8rem;
+      h2 {
+        font-size: 1.4rem;
+      }
+      
+      button, .menu-toggle {
+        padding: 0.9rem;
         font-size: 0.9rem;
       }
-    }
 
-        .countdown {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin: 2rem 0;
-    }
+      .countdown-item {
+        min-width: 60px;
+        padding: 0.8rem;
+      }
 
-    .countdown-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+      .countdown-number {
+        font-size: 1.5rem;
+      }
 
-    .countdown-number {
-      font-size: 3rem;
-      font-weight: bold;
-      background: linear-gradient(45deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-    }
+      .countdown-label {
+        font-size: 0.7rem;
+      }
 
-    .countdown-label {
-      font-size: 1rem;
-      color: #aaa;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      .feature-card h3 {
+        font-size: 1.1rem;
+      }
+
+      .feature-card p {
+        font-size: 0.95rem;
+      }
     }
   </style>
 </head>
@@ -220,52 +453,94 @@
     <img src="Adobe Express - file.png" alt="Gay After Dark Logo" />
   </header>
 
-  <div class="content-box">
-    <h1>After Dark Portal</h1>
-    <p>
-      Welcome to the Gays, Gags and Games portal for <strong>Gay After Dark</strong>. 
-      We are currently working HARD on bringing you the best games night ever!
-    </p>
+  <div class="game-container">
+    <div style="padding: 1.5rem;">
+      <h1>After Dark Portal</h1>
+      <p>
+        Welcome to the Gays, Games and Gags portal for <strong>Gay After Dark</strong>. 
+        We are currently working HARD on bringing you the best games night ever!
+      </p>
+    </div>
   </div>
-    <div class="content-box">
-    <h1>Countdown to Party Time!</h1>
-    <p>The fabulous event starts on 25 July 25 2025 at 18:00M</p>
-    
-    <div class="countdown">
-      <div class="countdown-item">
-        <span class="countdown-number" id="days">00</span>
-        <span class="countdown-label">Days</span>
-      </div>
-      <div class="countdown-item">
-        <span class="countdown-number" id="hours">00</span>
-        <span class="countdown-label">Hours</span>
-      </div>
-      <div class="countdown-item">
-        <span class="countdown-number" id="minutes">00</span>
-        <span class="countdown-label">Minutes</span>
-      </div>
-      <div class="countdown-item">
-        <span class="countdown-number" id="seconds">00</span>
-        <span class="countdown-label">Seconds</span>
+  
+  <div class="game-container glow">
+    <div style="padding: 1.5rem;">
+      <h1>Countdown to Party Time!</h1>
+      <p>The fabulous event starts on 25 July 2025 at 18:00</p>
+      
+      <div class="countdown">
+        <div class="countdown-item">
+          <span class="countdown-number" id="days">00</span>
+          <span class="countdown-label">Days</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-number" id="hours">00</span>
+          <span class="countdown-label">Hours</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-number" id="minutes">00</span>
+          <span class="countdown-label">Minutes</span>
+        </div>
+        <div class="countdown-item">
+          <span class="countdown-number" id="seconds">00</span>
+          <span class="countdown-label">Seconds</span>
+        </div>
       </div>
     </div>
-    </div>
+  </div>
 
   <!-- Mobile Menu Toggle Button -->
   <button class="menu-toggle" id="menuToggle">Party Menu ▼</button>
 
   <!-- Party Menu -->
-  <div class="content-box-buttons" id="partyMenu">
-    <h1>Party Menu</h1>
-    <div class="button-container">
-      <button onclick="window.location.href='noticeboard.html'">Noticeboard</button>
-      <button onclick="window.location.href='confessions.html'">Confession Page</button>
+  <div class="game-container content-box-buttons" id="partyMenu">
+    <div style="padding: 1.5rem;">
+      <h1>Party Menu</h1>
+      <div class="button-container">
+        <button onclick="window.location.href='noticeboard.html'">Noticeboard</button>
+        <button onclick="window.location.href='confessions.html'">Confession Page</button>
+      </div>
     </div>
   </div>
+  
+  <section class="features-section">
+    <h2>Games Night Features</h2>
+    <div class="feature-cards">
+      <div class="feature-card">
+        <h3>Nudentity</h3>
+        <p>A secretive game that explores the wonders of the gay nightlife and gay culture.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Kakkerlaken Poker</h3>
+        <p>A wild bluffing card game that can bring your luck to shambles.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Hummel Schummel</h3>
+        <p>Cheaters – this one's for you! Cheat your way through the Gays to win the prize!</p>
+      </div>
+      <div class="feature-card">
+        <h3>A Secret Currency</h3>
+        <p>We will announce a secret currency, courtesy of the gay icon, that can save or ruin anyone's night — turning a sober chauffeur into a drunken dom daddy.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Confessions Board</h3>
+        <p>Write your heart out at our one and only confessions board.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Receive a Secret Message</h3>
+        <p>Yes, we've not forgotten about those. More to be announced during the event!</p>
+      </div>
+      <div class="feature-card">
+        <h3>Spin the Bottle & More</h3>
+        <p>Spin the bottle, topple the top, message your ex, or something... Gays, Games & Gags will shock you straight into a vodka martini for recovery!</p>
+      </div>
+      <div class="feature-card">
+        <h3>Much More!</h3>
+        <p>Come enjoy an evening of being gay and proud in a judge-free environment. Meet new people, sip cocktails, play cards, and enjoy a few frisky surprises too!</p>
+      </div>
+    </div>
+  </section>
 
-  <footer>
-    Made with love for the drama queens & night creatures 🌙
-  </footer>
   <!-- Countdown Timer -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -298,11 +573,6 @@
       const countdownInterval = setInterval(updateCountdown, 1000);
     });
   </script>
-  <!-- Chatling Popup Widget -->
-  <script>
-    window.chtlConfig = { chatbotId: "1527145964" };
-  </script>
-  <script async data-id="1527145964" id="chtl-script" type="text/javascript" src="https://chatling.ai/js/embed.js"></script>
 
   <!-- Mobile Menu Toggle Script -->
   <script>
@@ -328,16 +598,6 @@
           this.classList.remove('active');
         });
       });
-
-      // Prevent zooming on double-tap (but allow pinch zoom)
-      let lastTouchEnd = 0;
-      document.addEventListener('touchend', function(event) {
-        const now = Date.now();
-        if (now - lastTouchEnd <= 300) {
-          event.preventDefault();
-        }
-        lastTouchEnd = now;
-      }, { passive: false });
 
       // Adjust chat widget position on mobile
       function adjustChatWidget() {
