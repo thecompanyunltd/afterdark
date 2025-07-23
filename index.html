@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Updated viewport meta coming soon page  <meta http-equiv="refresh" content="0;url=cummingsoon.html"> -->
+
   <meta charset="UTF-8" />
   <!-- Updated viewport meta tag to allow zooming -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0">
@@ -194,6 +196,36 @@
         font-size: 0.9rem;
       }
     }
+
+        .countdown {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+
+    .countdown-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .countdown-number {
+      font-size: 3rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, #e40303, #ff8c00, #ffed00, #008026, #004dff, #750787);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .countdown-label {
+      font-size: 1rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
   </style>
 </head>
 <body>
@@ -206,14 +238,35 @@
   </header>
 
   <div class="content-box">
-    <h1>Confessions Portal</h1>
+    <h1>After Dark Portal</h1>
     <p>
       Welcome to the Gays, Gags and Games portal for <strong>Gay After Dark</strong>. 
-      Drop your juicy stories, thoughts, or compliments before or during the party through our confession pages. 
-      RSVP coming soon!!💋. 
+      We are currently working HARD on bringing you the best games night ever!
     </p>
-    <p>{Click on the chat icon on the bottom right of your screen to start your confession or navigate to our dedicated page below}</p>
   </div>
+    <div class="content-box">
+    <h1>Countdown to Party Time!</h1>
+    <p>The fabulous event starts on 25 July 25 2025 at 18:00M</p>
+    
+    <div class="countdown">
+      <div class="countdown-item">
+        <span class="countdown-number" id="days">00</span>
+        <span class="countdown-label">Days</span>
+      </div>
+      <div class="countdown-item">
+        <span class="countdown-number" id="hours">00</span>
+        <span class="countdown-label">Hours</span>
+      </div>
+      <div class="countdown-item">
+        <span class="countdown-number" id="minutes">00</span>
+        <span class="countdown-label">Minutes</span>
+      </div>
+      <div class="countdown-item">
+        <span class="countdown-number" id="seconds">00</span>
+        <span class="countdown-label">Seconds</span>
+      </div>
+    </div>
+    </div>
 
   <!-- Mobile Menu Toggle Button -->
   <button class="menu-toggle" id="menuToggle">Party Menu ▼</button>
@@ -222,9 +275,7 @@
   <div class="content-box-buttons" id="partyMenu">
     <h1>Party Menu</h1>
     <div class="button-container">
-      <button onclick="window.location.href='countdown.html'">Countdown</button>
       <button onclick="window.location.href='noticeboard.html'">Noticeboard</button>
-      <button onclick="window.location.href='rsvps.html'">RSVP</button>
       <button onclick="window.location.href='confessions.html'">Confession Page</button>
     </div>
   </div>
@@ -232,7 +283,38 @@
   <footer>
     Made with love for the drama queens & night creatures 🌙
   </footer>
-
+  <!-- Countdown Timer -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const countdownDate = new Date('July 25, 2025 17:00:00').getTime();
+      
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = countdownDate - now;
+        
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        document.getElementById('days').textContent = days.toString().padStart(2, '0');
+        document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+        document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+        document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
+        
+        if (distance < 0) {
+          clearInterval(countdownInterval);
+          document.getElementById('days').textContent = '00';
+          document.getElementById('hours').textContent = '00';
+          document.getElementById('minutes').textContent = '00';
+          document.getElementById('seconds').textContent = '00';
+        }
+      }
+      
+      updateCountdown();
+      const countdownInterval = setInterval(updateCountdown, 1000);
+    });
+  </script>
   <!-- Chatling Popup Widget -->
   <script>
     window.chtlConfig = { chatbotId: "1527145964" };
