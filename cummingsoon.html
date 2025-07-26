@@ -2,92 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Under Construction 🌈</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Access Restricted</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Arial', sans-serif;
-      color: white;
-      text-align: center;
-      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a1a;
+      color: #f2f2f2;
       display: flex;
-      justify-content: center;
       align-items: center;
-      background: linear-gradient(270deg, red, orange, yellow, green, blue, indigo, violet);
-      background-size: 1400% 1400%;
-      animation: rainbow 200s
-       ease infinite;
-    }
-
-    @keyframes rainbow {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      padding: 20px;
     }
 
     .container {
-      background-color: rgba(0, 0, 0, 0.6);
-      padding: 40px;
-      border-radius: 20px;
-      max-width: 500px;
-      box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+      background-color: #2e2e2e;
+      padding: 40px 30px;
+      border-radius: 12px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
     }
 
     h1 {
-      font-size: 2em;
-      margin-bottom: 10px;
+      font-size: 1.8em;
+      margin-bottom: 20px;
+      color: #ff6ec7;
     }
 
     p {
-      font-size: 1.2em;
+      font-size: 1.1em;
+      line-height: 1.6;
     }
 
-    .countdown {
-      font-weight: bold;
-      font-size: 1.5em;
-      margin-top: 15px;
-      color: #ffccff;
+    .contact {
+      margin-top: 25px;
+      font-weight: 500;
+      color: #cccccc;
     }
 
-    .emoji {
-      font-size: 2.5em;
-      margin: 10px 0;
+    .footer {
+      margin-top: 30px;
+      font-size: 0.95em;
+      color: #999999;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="emoji">🏳️‍🌈✨🛠️</div>
-    <h1>Sorry, darling!</h1>
-    <p>You won't have privileges to view this page until:</p>
-    <div class="countdown" id="countdown">Loading...</div>
-    <p>25 July @ 16:00 </p>
+    <h1>Access No Longer Available</h1>
+    <p>The contents of this event are no longer accessible via this domain.</p>
+    <p>Please contact the TBW administrator if you require access to any pages or content previously hosted here.</p>
+    <div class="contact">Thank you for attending <strong>Gay After Dark</strong>.</div>
+    <div class="footer">We’ll see you again soon!</div>
   </div>
-
-  <script>
-    const countdownEl = document.getElementById("countdown");
-    const targetDate = new Date("2025-07-25T14:00:00Z"); // 18:00 SAST = 16:00 UTC
-
-    function updateCountdown() {
-      const now = new Date();
-      const diff = targetDate - now;
-
-      if (diff <= 0) {
-        countdownEl.textContent = "🎉 Access Granted! 🎉";
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
-
-      countdownEl.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-    }
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
-  </script>
 </body>
 </html>
