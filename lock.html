@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lock & Key - A Night of Perfect Fits</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;500&display=swap');
+        
+        :root {
+            --dark: #1a1a2e;
+            --accent: #9a348e;
+            --light: #f8f8f8;
+            --highlight: #da627d;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--highlight);
+            text-shadow: 0 0 10px rgba(218, 98, 125, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+        
+        .divider {
+            height: 2px;
+            width: 100px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            margin: 2rem auto;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        p {
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+        }
+        
+        .highlight {
+            color: var(--highlight);
+            font-weight: 500;
+        }
+        
+        .date-placeholder {
+            font-size: 1.5rem;
+            margin: 2rem 0;
+            padding: 1rem 2rem;
+            border: 1px solid var(--accent);
+            border-radius: 50px;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .date-placeholder::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                to bottom right,
+                transparent 45%,
+                rgba(154, 52, 142, 0.3) 50%,
+                transparent 55%
+            );
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .cta-button {
+            background: linear-gradient(45deg, var(--accent), var(--highlight));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 1rem;
+            box-shadow: 0 5px 15px rgba(154, 52, 142, 0.4);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(154, 52, 142, 0.6);
+        }
+        
+        .lock-container {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin: 3rem 0;
+        }
+        
+        .lock {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            background-color: var(--dark);
+            border: 3px solid var(--accent);
+            border-radius: 15px;
+            z-index: 2;
+        }
+        
+        .lock::before {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-color: var(--dark);
+            border: 3px solid var(--accent);
+            border-radius: 50%;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .key {
+            position: absolute;
+            width: 80px;
+            height: 20px;
+            background-color: var(--highlight);
+            border-radius: 5px;
+            top: 50%;
+            left: 30%;
+            transform: translateY(-50%) rotate(0deg);
+            z-index: 1;
+            transition: all 1s ease;
+            cursor: pointer;
+        }
+        
+        .key::before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 40px;
+            background-color: var(--highlight);
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 0 5px 5px 0;
+        }
+        
+        .key::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background-color: var(--dark);
+            border-radius: 50%;
+            right: -17px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .key-hole {
+            position: absolute;
+            width: 20px;
+            height: 30px;
+            background-color: var(--dark);
+            border: 2px solid var(--accent);
+            border-radius: 5px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 4rem;
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+        
+        .floating-keys {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .floating-key {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-50px) rotate(180deg); }
+            100% { transform: translateY(0) rotate(360deg); }
+        }
+        
+        .secret-message {
+            opacity: 0;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(26, 26, 46, 0.9);
+            padding: 1rem;
+            border-radius: 5px;
+            border: 1px solid var(--highlight);
+            transition: opacity 0.3s ease;
+            max-width: 80%;
+            text-align: center;
+        }
+        
+        .secret-message.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-keys" id="floatingKeys"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Lock & Key</h1>
+            <div class="subtitle">A Night of Perfect Fits</div>
+            <div class="divider"></div>
+        </header>
+        
+        <div class="main-content">
+            <p>Some connections are <span class="highlight">meant to be</span>. Some fits are <span class="highlight">perfectly aligned</span>. Some discoveries are <span class="highlight">worth the wait</span>.</p>
+            
+            <p>Join us for an evening where <span class="highlight">locks</span> and <span class="highlight">keys</span> find their matches. Whether you come as a pair or alone, expect the <span class="highlight">unexpected</span>.</p>
+            
+            <p>Dress to <span class="highlight">impress</span> and prepare to <span class="highlight">explore</span>. The night will reveal what's been <span class="highlight">hidden</span>.</p>
+            
+            <div class="date-placeholder">Date To Be Confirmed</div>
+            
+            <div class="lock-container">
+                <div class="lock"></div>
+                <div class="key-hole"></div>
+                <div class="key" id="interactiveKey"></div>
+            </div>
+            
+            <button class="cta-button" id="rsvpButton">Reserve Your Spot</button>
+        </div>
+        
+        <footer>
+            <p>This event is open to all - singles and couples alike. 21+ only.</p>
+            <p>Location disclosed to confirmed guests only.</p>
+        </footer>
+    </div>
+    
+    <div class="secret-message" id="secretMessage">
+        The right key turns smoothly... will you find yours?
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create floating keys
+            const floatingKeys = document.getElementById('floatingKeys');
+            for (let i = 0; i < 15; i++) {
+                const key = document.createElement('div');
+                key.className = 'floating-key';
+                key.innerHTML = '🔑';
+                key.style.left = Math.random() * 100 + 'vw';
+                key.style.top = Math.random() * 100 + 'vh';
+                key.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                key.style.animationDuration = (Math.random() * 20 + 10) + 's';
+                key.style.animationDelay = (Math.random() * 5) + 's';
+                floatingKeys.appendChild(key);
+            }
+            
+            // Interactive key
+            const interactiveKey = document.getElementById('interactiveKey');
+            const lock = document.querySelector('.lock');
+            const secretMessage = document.getElementById('secretMessage');
+            
+            let isDragging = false;
+            let startX, startY;
+            
+            interactiveKey.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+            
+            interactiveKey.addEventListener('touchstart', startDrag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('touchend', endDrag);
+            
+            function startDrag(e) {
+                isDragging = true;
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                
+                startX = clientX - interactiveKey.getBoundingClientRect().left;
+                startY = clientY - interactiveKey.getBoundingClientRect().top;
+                
+                interactiveKey.style.transition = 'none';
+                e.preventDefault();
+            }
+            
+            function drag(e) {
+                if (!isDragging) return;
+                
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+                
+                const containerRect = document.querySelector('.lock-container').getBoundingClientRect();
+                let newLeft = clientX - containerRect.left - startX;
+                let newTop = clientY - containerRect.top - startY;
+                
+                // Constrain to container
+                newLeft = Math.max(0, Math.min(newLeft, containerRect.width - interactiveKey.offsetWidth));
+                newTop = Math.max(0, Math.min(newTop, containerRect.height - interactiveKey.offsetHeight));
+                
+                interactiveKey.style.left = newLeft + 'px';
+                interactiveKey.style.top = newTop + 'px';
+                
+                // Check if key is near lock
+                const keyRect = interactiveKey.getBoundingClientRect();
+                const lockRect = lock.getBoundingClientRect();
+                
+                const distance = Math.sqrt(
+                    Math.pow(keyRect.left + keyRect.width/2 - (lockRect.left + lockRect.width/2), 2) +
+                    Math.pow(keyRect.top + keyRect.height/2 - (lockRect.top + lockRect.height/2), 2)
+                );
+                
+                if (distance < 60) {
+                    interactiveKey.style.transform = `translateY(-50%) rotate(${Math.atan2(
+                        lockRect.top + lockRect.height/2 - (keyRect.top + keyRect.height/2),
+                        lockRect.left + lockRect.width/2 - (keyRect.left + keyRect.width/2)
+                    ) * 180 / Math.PI + 90}deg)`;
+                    
+                    // Show secret message when key is in lock
+                    if (distance < 30) {
+                        secretMessage.classList.add('show');
+                        setTimeout(() => {
+                            secretMessage.classList.remove('show');
+                        }, 3000);
+                    }
+                }
+                
+                e.preventDefault();
+            }
+            
+            function endDrag() {
+                isDragging = false;
+                interactiveKey.style.transition = 'all 1s ease';
+                
+                // Return key to original position
+                setTimeout(() => {
+                    if (!isDragging) {
+                        interactiveKey.style.left = '30%';
+                        interactiveKey.style.top = '50%';
+                        interactiveKey.style.transform = 'translateY(-50%) rotate(0deg)';
+                    }
+                }, 100);
+            }
+            
+            // RSVP button effect
+            const rsvpButton = document.getElementById('rsvpButton');
+            rsvpButton.addEventListener('click', function() {
+                alert('Details will be sent soon... keep your key ready.');
+            });
+        });
+    </script>
+</body>
+</html>
